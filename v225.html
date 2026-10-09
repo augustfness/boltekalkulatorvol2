@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17614f">
+  <title>Boltebehov | V225 partialfaktormetoden</title>
+  <style>
+    :root { --ink: #182b27; --muted: #546963; --green: #17614f; --line: #d8e3dd; --paper: #fff; --accent: #b14b32; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: #f1f5f3; font-family: 'Trebuchet MS', sans-serif; line-height: 1.5; }
+    button, input, select { font: inherit; }
+    button, summary { cursor: pointer; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    header { background: var(--paper); border-bottom: 1px solid var(--line); }
+    .header-inner { max-width: 1050px; margin: auto; padding: 20px 28px; display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
+    .brand { font-weight: bold; color: var(--green); text-transform: uppercase; }
+    main { max-width: 1050px; margin: auto; padding: 28px; }
+    .method-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
+    .method-switch a { padding: 11px 8px; min-height: 46px; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 14px; }
+    .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
+    h1 { font: normal 36px/1.15 Georgia, serif; margin: 0 0 8px; }
+    .subtitle { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
+    .workspace { display: grid; grid-template-columns: 1fr .9fr; gap: 40px; align-items: start; }
+    form, section { min-width: 0; }
+    h2 { font-size: 17px; margin: 0; }
+    h3 { font-size: 15px; margin: 22px 0 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+    .actions { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 15px; }
+    button { background: transparent; border: 0; padding: 10px 0; color: var(--green); text-decoration: underline; min-height: 44px; font-size: 13px; }
+    .field { margin-bottom: 16px; }
+    label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 7px; }
+    .input-wrap { position: relative; }
+    .input-wrap input, select { width: 100%; min-height: 52px; border: 1px solid #a7bbb0; border-radius: 5px; background: white; color: var(--ink); }
+    .input-wrap input { padding: 11px 82px 11px 12px; font-size: 21px; font-variant-numeric: tabular-nums; }
+    select { padding: 12px; font-size: 15px; }
+    .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; pointer-events: none; }
+    input[aria-invalid="true"] { border-color: var(--accent); }
+    .hint, .error { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+    .error { color: #a43822; }
+    .error:empty { display: none; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .pair .input-wrap input { padding-right: 46px; }
+    details { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 12px; font-size: 14px; }
+    summary { min-height: 44px; color: var(--green); font-weight: bold; }
+    .results { background: white; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .result-main { background: var(--green); color: white; padding: 23px; }
+    .result-main h2 { font-size: 14px; font-weight: normal; }
+    .count { display: flex; gap: 12px; align-items: baseline; }
+    #bolt-count { font-size: 60px; line-height: 1.3; overflow-wrap: anywhere; min-width: 0; }
+    .result-note { margin: 8px 0 0; font-size: 12px; }
+    .metrics { padding: 0 23px; margin: 0; }
+    .metric { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; border-bottom: 1px solid var(--line); padding: 13px 0; }
+    .metric:last-child { border-bottom: 0; }
+    dt { color: var(--muted); font-size: 12px; }
+    dd { margin: 0; font-size: 18px; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .checks { padding: 0 23px 18px; }
+    .check { padding-top: 14px; border-top: 1px solid var(--line); margin-top: 6px; }
+    .check strong { display: block; font-size: 14px; }
+    .check p { margin: 4px 0 0; font-size: 13px; }
+    .pass { color: var(--green); }
+    .fail { color: #a43822; }
+    .assumption { border-left: 3px solid var(--accent); padding-left: 13px; font-size: 13px; color: var(--muted); margin-top: 18px; }
+    .sketch { display: block; width: 100%; height: 140px; background: #f9fbfa; border-top: 1px solid var(--line); }
+    .formula { background: white; border-left: 3px solid var(--green); padding: 14px; line-height: 1.9; overflow-wrap: anywhere; }
+    .method { max-width: 780px; color: var(--muted); }
+    .example-notice { border-left: 3px solid var(--accent); padding-left: 12px; color: #a43822; font-size: 13px; }
+    footer { color: var(--muted); font-size: 12px; margin: 24px 0 8px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 700px) {
+      main { padding: 20px; }
+      .header-inner { padding: 15px 20px; }
+      h1 { font-size: 30px; }
+      .workspace { grid-template-columns: 1fr; gap: 24px; }
+      .method-switch a { font-size: 13px; }
+      .pair { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header><div class="header-inner"><span class="brand">Bergsikring / Feltverkt&oslash;y</span><span>Plan utglidning</span></div></header>
+  <main>
+    <nav class="method-switch" aria-label="Beregningsmetode"><a href="index.html">Forenklet feltoverslag</a><a href="v225.html" aria-current="page">V225 &middot; Partialfaktorer</a></nav>
+    <h1>Partialfaktormetoden</h1>
+    <p class="subtitle">Passive bolter &middot; N-V225, 30.04.2025 &middot; Ett glideplan</p>
+    <div class="workspace">
+      <form id="calculator" novalidate>
+        <div class="actions"><h2>Blokk og glideplan</h2><button type="button" id="example">V225-regneeksempel</button><button type="button" id="reset">Nullstill</button></div>
+        <p id="example-notice" class="example-notice" hidden>Regneeksempel fra kap. 5.2.5 er lastet inn, per meter skj&aelig;ring. Verdier kan v&aelig;re endret. Ikke prosjektverdier eller anbefalinger.</p>
+        <div class="field"><label for="weight">Karakteristisk blokkvekt G</label><div class="input-wrap"><input id="weight" type="text" inputmode="decimal" aria-describedby="weight-hint weight-error"><span class="unit">kN</span></div><p class="hint" id="weight-hint">Total vekt, ikke masse. G = volum &middot; tyngdetetthet, eller masse i tonn &middot; 9,81.</p><p class="error" id="weight-error"></p></div>
+        <div class="field"><label for="beta">Glideplanets fall &beta;</label><div class="input-wrap"><input id="beta" type="text" inputmode="decimal" aria-describedby="beta-error"><span class="unit">grader</span></div><p class="error" id="beta-error"></p></div>
+        <div class="pair">
+          <div class="field"><label for="phi">Friksjon &phi;<sub>k</sub></label><div class="input-wrap"><input id="phi" type="text" inputmode="decimal" aria-describedby="phi-error"><span class="unit">&deg;</span></div><p class="error" id="phi-error"></p></div>
+          <div class="field"><label for="residual">Residual &phi;<sub>rk</sub></label><div class="input-wrap"><input id="residual" type="text" inputmode="decimal" aria-describedby="residual-hint residual-error"><span class="unit">&deg;</span></div><p class="error" id="residual-error"></p></div>
+        </div>
+        <p class="hint" id="residual-hint">Karakteristiske vinkler. Residual friksjon brukes etter skj&aelig;rbrudd; bestemmes faglig, ikke automatisk fra bergart.</p>
+        <div class="pair">
+          <div class="field"><label for="cohesion">Kohesjon c<sub>k</sub></label><div class="input-wrap"><input id="cohesion" type="text" inputmode="decimal" value="0" aria-describedby="cohesion-error"><span class="unit">kPa</span></div><p class="error" id="cohesion-error"></p></div>
+          <div class="field"><label for="area">Glideareal A</label><div class="input-wrap"><input id="area" type="text" inputmode="decimal" aria-describedby="area-error"><span class="unit">m&sup2;</span></div><p class="error" id="area-error"></p></div>
+        </div>
+        <div class="field"><label for="water">Dimensjonerende vannkraft U<sub>d</sub></label><div class="input-wrap"><input id="water" type="text" inputmode="decimal" value="0" aria-describedby="water-hint water-error"><span class="unit">kN</span></div><p class="hint" id="water-hint">Samlet kraft normalt p&aring; hele glidearealet, ikke trykk i kPa. 0 betyr at vannlast ikke er medtatt. Vannmodell m&aring; vurderes.</p><p class="error" id="water-error"></p></div>
+        <h3>Passiv sikring</h3>
+        <div class="field"><label for="bolt-type">Boltetype</label><select id="bolt-type"><option value="custom">Egendefinert kapasitet</option></select></div>
+        <div class="field"><label for="capacity-basis">Kapasitetsgrunnlag</label><select id="capacity-basis" aria-describedby="basis-hint"><option value="design">Dimensjonerende aksialkapasitet C_d</option><option value="characteristic">Karakteristisk aksialkapasitet C_k</option></select><p class="hint" id="basis-hint">Bolteverdiene fra din tabell er allerede dimensjonerende og skal ikke deles p&aring; en materialfaktor p&aring; nytt.</p></div>
+        <div class="field"><label for="capacity">Aksialkapasitet per bolt</label><div class="input-wrap"><input id="capacity" type="text" inputmode="decimal" aria-describedby="capacity-hint capacity-error"><span class="unit">kN/bolt</span></div><p class="hint" id="capacity-hint">Kapasitet for hele sikringsmiddelet, begrenset av st&aring;l, heft og forankring. Ikke kapasitet langs planet.</p><p class="error" id="capacity-error"></p></div>
+        <div class="field" id="gamma-bolt-field" hidden><label for="gamma-bolt">Materialfaktor for sikringsmiddelet &gamma;<sub>s</sub></label><div class="input-wrap"><input id="gamma-bolt" type="text" inputmode="decimal" aria-describedby="gamma-bolt-hint gamma-bolt-error"><span class="unit">faktor</span></div><p class="hint" id="gamma-bolt-hint">M&aring; fastsettes faglig. 1,25 i V225-eksempelet er ikke en generell anbefaling; 1,15 omtales for armeringsst&aring;l alene.</p><p class="error" id="gamma-bolt-error"></p></div>
+        <div class="field"><label for="alpha">Boltens vinkel &alpha; fra horisontalen</label><div class="input-wrap"><input id="alpha" type="text" inputmode="decimal" aria-describedby="alpha-hint alpha-error"><span class="unit">grader</span></div><p class="hint" id="alpha-hint">Positiv nedover inn i berget som i V225 figur 5.2.4&ndash;1. Denne modellen avgrenses til 0 &le; &alpha; + &beta; &le; 90&deg;.</p><p class="error" id="alpha-error"></p></div>
+        <div class="field"><label for="installed">Antall bolter som kontrolleres</label><div class="input-wrap"><input id="installed" type="text" inputmode="numeric" value="0" aria-describedby="installed-hint installed-error"><span class="unit">stk.</span></div><p class="hint" id="installed-hint">Samme boltetype, retning og lik lastdeling.</p><p class="error" id="installed-error"></p></div>
+        <details><summary>Materialfaktorer og seismikk</summary>
+          <div class="pair">
+            <div class="field"><label for="gamma-phi">&gamma;<sub>&phi;</sub></label><div class="input-wrap"><input id="gamma-phi" type="text" inputmode="decimal" value="1,25" aria-describedby="gamma-phi-error"><span class="unit">&ndash;</span></div><p class="error" id="gamma-phi-error"></p></div>
+            <div class="field"><label for="gamma-cohesion">&gamma;<sub>c</sub></label><div class="input-wrap"><input id="gamma-cohesion" type="text" inputmode="decimal" value="1,25" aria-describedby="gamma-cohesion-error"><span class="unit">&ndash;</span></div><p class="error" id="gamma-cohesion-error"></p></div>
+          </div>
+          <p class="hint">1,25 er verdiene brukt i kap. 5.2.4/5.2.5. Kohesjonsfaktoren m&aring; vurderes ut fra materialet og usikkerheten. Faktoren brukes p&aring; tan(&phi;), ikke p&aring; vinkelen.</p>
+          <div class="field"><label for="seismic">Dimensjonerende horisontal seismisk kraft F<sub>a,d</sub></label><div class="input-wrap"><input id="seismic" type="text" inputmode="decimal" value="0" aria-describedby="seismic-hint seismic-error"><span class="unit">kN</span></div><p class="hint" id="seismic-hint">Innlagt kraft skal allerede inkludere relevante faktorer. V225: F_a = G &middot; a_g &middot; S_f / g. 0 betyr at seismikk ikke er medtatt; unntak og seismisk klasse kontrolleres separat.</p><p class="error" id="seismic-error"></p></div>
+          <p class="hint">G_s = G sin(&beta;) og G_n = G cos(&beta;), med samme egenvekt og faktor 1,0 som V225-eksempelet. Andre lastkombinasjoner og ytre laster inng&aring;r ikke.</p>
+        </details>
+      </form>
+      <section aria-label="Resultat fra partialfaktormetoden">
+        <div class="results" aria-live="polite" aria-atomic="true">
+          <div class="result-main"><h2>Minste bolteantall mot kollaps</h2><div class="count"><output id="bolt-count">&ndash;</output><span>bolter</span></div><p class="result-note" id="result-status">Oppgi prosjektverdier for &aring; beregne.</p></div>
+          <dl class="metrics">
+            <div class="metric"><dt>Aksial boltekraft ved likevekt</dt><dd id="required-force">&ndash;</dd></div>
+            <div class="metric"><dt>Dimensjonerende drivkraft F<sub>d</sub></dt><dd id="driving-force">&ndash;</dd></div>
+            <div class="metric"><dt>Aksialkapasitet C<sub>d</sub> per bolt</dt><dd id="design-capacity">&ndash;</dd></div>
+            <div class="metric"><dt>Skj&aelig;rbrudd: R<sub>d</sub> uten boltebidrag</dt><dd id="shear-resistance">&ndash;</dd></div>
+            <div class="metric"><dt>Kollaps: R<sub>d</sub> med valgt antall</dt><dd id="collapse-resistance">&ndash;</dd></div>
+            <div class="metric"><dt>Kollaps: ratio R<sub>d</sub> / F<sub>d</sub></dt><dd id="ratio">&ndash;</dd></div>
+          </dl>
+          <div class="checks">
+            <div class="check"><strong>1. Kontroll mot skj&aelig;rbrudd</strong><p id="shear-check">&ndash;</p></div>
+            <div class="check"><strong>2. Kontroll mot kollaps &middot; valgt antall</strong><p id="collapse-check">&ndash;</p></div>
+            <div class="check"><strong>Kontakt p&aring; glideplanet</strong><p id="contact-check">&ndash;</p></div>
+          </div>
+          <svg class="sketch" viewBox="0 0 400 140" role="img" aria-label="Prinsippskisse: glideplan med fall beta og bolt som heller alpha ned fra horisontalen inn i berget">
+            <path d="M70 120 L330 120 L330 15 Z" fill="#e3ebe6"/><path d="M70 120 L330 15" stroke="#718b7e" stroke-width="2"/>
+            <path d="M140 92 L123 52 L175 22 L230 55 Z" fill="#9caf9e" stroke="#536b5d"/>
+            <path d="M105 78 L270 101" stroke="#17614f" stroke-width="4"/><path d="M105 78 H180" stroke="#546963" stroke-dasharray="4 4"/>
+            <path d="M70 120 H155" stroke="#546963" stroke-dasharray="4 4"/>
+            <text x="158" y="117" fill="#546963" font-size="13">&beta;</text><text x="167" y="95" fill="#17614f" font-size="13">&alpha;</text><text x="277" y="103" fill="#17614f" font-size="12">Bolt</text><text x="250" y="132" fill="#546963" font-size="10">Prinsippskisse</text>
+          </svg>
+        </div>
+        <p class="assumption"><strong>Avgrenset beregningsmodell, ikke en ferdig sikringsanvisning.</strong> Passive bolter hindrer ikke n&oslash;dvendigvis innledende skj&aelig;rbrudd. Et tilfredsstillende kollapsresultat betyr ikke at begge kontroller er oppfylt. Geometri, vannlast, residual styrke, mobilisering og forankring krever faglig vurdering.</p>
+      </section>
+    </div>
+    <details><summary>Beregningsgrunnlag &middot; N-V225 kapittel 5</summary><div class="method">
+      <p>Kilde: N-V225 Bergskj&aelig;ringer, gyldig fra 30.04.2025. Kap. 5.2.4, side 40&ndash;47, og eksempelet i kap. 5.2.5, side 48&ndash;50. Implementert: ny passiv boltemodell, formler (5.2.4&ndash;26), (5.2.4&ndash;27) og (5.2.4&ndash;28). Aktiv sikring og konvensjonell boltemodell inng&aring;r ikke.</p>
+      <div class="formula">tan(&phi;<sub>d</sub>) = tan(&phi;<sub>k</sub>) / &gamma;<sub>&phi;</sub><br>tan(&phi;<sub>rd</sub>) = tan(&phi;<sub>rk</sub>) / &gamma;<sub>&phi;</sub><br>c<sub>d</sub> = c<sub>k</sub> / &gamma;<sub>c</sub><br>C<sub>d</sub> = C<sub>k</sub> / &gamma;<sub>s</sub>, eller allerede dimensjonerende kapasitet<br>G<sub>s</sub> = G sin(&beta;), G<sub>n</sub> = G cos(&beta;)<br>F<sub>s</sub> = F<sub>a,d</sub> cos(&beta;), F<sub>n</sub> = F<sub>a,d</sub> sin(&beta;)<br>T<sub>s</sub> = n C<sub>d</sub> cos(&alpha; + &beta;)<br>T<sub>n</sub> = n C<sub>d</sub> sin(&alpha; + &beta;)<br>F<sub>d</sub> = G<sub>s</sub> + F<sub>s</sub><br>R<sub>d,skj&aelig;r</sub> = c<sub>d</sub>A + (G<sub>n</sub> &minus; U<sub>d</sub> &minus; F<sub>n</sub>) tan(&phi;<sub>d</sub>)<br>R<sub>d,kollaps</sub> = (G<sub>n</sub> &minus; U<sub>d</sub> &minus; F<sub>n</sub> + T<sub>n</sub>) tan(&phi;<sub>rd</sub>) + T<sub>s</sub></div>
+      <p>Mot kollaps settes kohesjonen til null. Minste hele bolteantall velges slik at R<sub>d,kollaps</sub> &gt; F<sub>d</sub> og effektiv normalkraft ikke er negativ. Likevekt alene oppfyller ikke det strenge &gt;-kriteriet i (5.2.4&ndash;4). Ratioen omtales ikke som sikkerhetsfaktor.</p>
+      <p>Negative normalkrefter varsles som mulig kontakttap. Formelverdien vises fortsatt for sammenligning med h&aring;ndboka, men en kontaktbasert friksjonskontroll rapporteres ikke som tilfredsstillende ved negativ normalkraft. Beregningen omfatter ikke &aring;pning av sprekker, rotasjon eller andre bruddmekanismer.</p>
+      <p>U<sub>d</sub> oppgis direkte for hele blokken. For h&aring;ndbokas triangul&aelig;re vannmodell og et prisme med bredde L kan vannkraften beregnes som &rho;<sub>w</sub> H&sup2; L / (4 sin(&beta;)), formel (5.2.4&ndash;11), med de valgte dimensjonerende vannforutsetningene. Blokkvekt og areal m&aring; gjelde samme bredde som vannkraft og bolteantall. Andre vannmodeller krever eget grunnlag.</p>
+      <p>Regneeksempelknappen bruker H = 20 m, &theta; = 80&deg;, &beta; = 65&deg;, &rho;<sub>b</sub> = 27 kN/m&sup3;, &rho;<sub>w</sub> = 10 kN/m&sup3; og bredde 1 m. G, U og A er beregnet fra geometrien og lagt inn med seks desimaler for &aring; unng&aring; avrundingsavvik fra tabellen. C<sub>k</sub> = 157 kN og &gamma;<sub>s</sub> = 1,25 gir C<sub>d</sub> = 125,6 kN. Dette gir omtrent R<sub>d,skj&aelig;r</sub> = 282 kN og R<sub>d,kollaps</sub> = 859 kN med 12 bolter, slik som tabell 5.2.5&ndash;3. Faktorvalget for bolter er kun h&aring;ndbokas eksempel.</p>
+      <p>Boltekapasitetene i menyen er brukeroppgitte, ikke verifiserte produktdata fra V225. Appen kontrollerer ikke samsvar med hele Eurokode-/N200-grunnlaget, prosjekteringskategori, kontrollkrav eller en fullstendig lastkombinasjon.</p>
+    </div></details>
+    <footer>Inndata lagres separat fra feltoverslaget i denne nettleseren. Ingen beregningsdata sendes til en server.</footer>
+  </main>
+  <script>
+    const element = (id) => document.getElementById(id);
+    const storageKey = 'boltebehov-v225-v1';
+    const defaults = { weight: '', beta: '', phi: '', residual: '', cohesion: '0', area: '', water: '0', capacity: '', alpha: '', installed: '0', 'gamma-phi': '1,25', 'gamma-cohesion': '1,25', seismic: '0', 'gamma-bolt': '', 'bolt-type': 'custom', 'capacity-basis': 'design', example: false };
+    const example = { weight: '1565,895658', beta: '65', phi: '35', residual: '30', cohesion: '30', area: '22,067558', water: '1103,377919', capacity: '157', alpha: '10', installed: '12', 'gamma-phi': '1,25', 'gamma-cohesion': '1,25', seismic: '0', 'gamma-bolt': '1,25', 'bolt-type': 'custom', 'capacity-basis': 'characteristic', example: true };
+    const fields = Object.keys(defaults).filter((name) => name !== 'example');
+    const numericFields = fields.filter((name) => !['bolt-type', 'capacity-basis'].includes(name));
+    const boltTypes = [
+      { id: 'diameter20', label: '\u00d820', capacity: 125.6 },
+      { id: 'diameter25', label: '\u00d825', capacity: 196.4 },
+      { id: 'diameter32', label: '\u00d832', capacity: 321.6 },
+      { id: 'r32', label: 'R32', capacity: 224 },
+      { id: 'r38', label: 'R38', capacity: 320 },
+      { id: 'r51', label: 'R51', capacity: 584 },
+      { id: 't40', label: 'T40', capacity: 420 }
+    ];
+    const numberFormat = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const ratioFormat = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    const countFormat = new Intl.NumberFormat('nb-NO');
+    let isExample = false;
+    boltTypes.forEach((bolt) => element('bolt-type').add(new Option(bolt.label + ' \u2014 C_d = ' + numberFormat.format(bolt.capacity) + ' kN', bolt.id)));
+    function parseNumber(text) {
+      const normalized = text.trim().replace(',', '.');
+      return /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized) ? Number(normalized) : NaN;
+    }
+    function exceedsDemand(resistance, demand) {
+      return resistance - demand > 1e-10 * Math.max(1, Math.abs(resistance), Math.abs(demand));
+    }
+    function calculateV225(values) {
+      const radians = Math.PI / 180;
+      const beta = values.beta * radians;
+      const boltAngle = (values.alpha + values.beta) * radians;
+      const sine = Math.sin(boltAngle);
+      const cosine = Math.abs(Math.cos(boltAngle)) < 1e-12 ? 0 : Math.cos(boltAngle);
+      const friction = Math.tan(values.phi * radians) / values['gamma-phi'];
+      const residual = Math.tan(values.residual * radians) / values['gamma-phi'];
+      const capacity = values.basis === 'characteristic' ? values.capacity / values['gamma-bolt'] : values.capacity;
+      const normal = values.weight * Math.cos(beta) - values.water - values.seismic * Math.sin(beta);
+      const drivingForce = values.weight * Math.sin(beta) + values.seismic * Math.cos(beta);
+      const contribution = sine * residual + cosine;
+      const shearResistance = values.cohesion / values['gamma-cohesion'] * values.area + normal * friction;
+      const collapseNormal = normal + values.installed * capacity * sine;
+      const collapseResistance = collapseNormal * residual + values.installed * capacity * cosine;
+      const requiredForce = contribution > 1e-12 ? Math.max(0, (drivingForce - normal * residual) / contribution, sine > 1e-12 ? -normal / sine : 0) : Infinity;
+      const demandLimit = Math.max(drivingForce + 1e-10, drivingForce / (1 - 1e-10));
+      let bolts = contribution > 1e-12 ? Math.max(0, Math.floor((demandLimit - normal * residual) / (capacity * contribution)) + 1, Math.ceil(Math.max(0, -normal) / (capacity * sine))) : Infinity;
+      if (Number.isSafeInteger(bolts)) {
+        const securedNormal = normal + bolts * capacity * sine;
+        const securedResistance = securedNormal * residual + bolts * capacity * cosine;
+        if (!exceedsDemand(securedResistance, drivingForce) || securedNormal < 0) bolts += 1;
+        const checkedNormal = normal + bolts * capacity * sine;
+        const checkedResistance = checkedNormal * residual + bolts * capacity * cosine;
+        if (!exceedsDemand(checkedResistance, drivingForce) || checkedNormal < 0) bolts = Infinity;
+      }
+      return { normal, drivingForce, capacity, shearResistance, collapseNormal, collapseResistance, requiredForce, bolts, ratio: collapseResistance / drivingForce };
+    }
+    function setCheck(id, message, pass) {
+      element(id).textContent = message;
+      element(id).className = pass === null ? '' : pass ? 'pass' : 'fail';
+    }
+    function update() {
+      const basis = element('capacity-basis').value;
+      element('gamma-bolt-field').hidden = basis !== 'characteristic';
+      element('example-notice').hidden = !isExample;
+      const values = { basis };
+      let valid = true;
+      numericFields.forEach((name) => { values[name] = parseNumber(element(name).value); });
+      numericFields.forEach((name) => {
+        const value = values[name];
+        const active = !(name === 'gamma-bolt' && basis !== 'characteristic') && !(name === 'area' && values.cohesion === 0);
+        let acceptable = Number.isFinite(value) && value >= 0;
+        let message = 'Oppgi et tall lik eller st\u00f8rre enn 0.';
+        if (['weight', 'capacity', 'area'].includes(name)) { acceptable = acceptable && value > 0; message = 'Oppgi et tall st\u00f8rre enn 0.'; }
+        if (name.startsWith('gamma-')) { acceptable = acceptable && value >= 1; message = 'Oppgi en faktor p\u00e5 minst 1,0.'; }
+        if (name === 'beta') { acceptable = acceptable && value > 0 && value < 90; message = 'Oppgi en helning mellom 0 og 90 grader (ikke endepunktene).'; }
+        if (['phi', 'residual'].includes(name)) { acceptable = acceptable && value < 90; message = 'Oppgi en vinkel fra 0 til under 90 grader.'; }
+        if (name === 'residual' && Number.isFinite(values.phi)) { acceptable = acceptable && value <= values.phi; message = 'Residual vinkel m\u00e5 v\u00e6re mellom 0 og opprinnelig friksjonsvinkel.'; }
+        if (name === 'alpha') { acceptable = acceptable && value + values.beta <= 90; message = 'Oppgi en vinkel fra 0 til 90 minus glideplanets helning.'; }
+        if (name === 'installed') { acceptable = acceptable && Number.isSafeInteger(value); message = 'Oppgi et helt antall bolter, minst 0.'; }
+        const invalid = active && !acceptable;
+        element(name).setAttribute('aria-invalid', String(invalid));
+        element(name + '-error').textContent = invalid ? message : '';
+        if (invalid) valid = false;
+      });
+      if (values.cohesion === 0) values.area = 0;
+      const result = valid ? calculateV225(values) : null;
+      const usable = result && ['normal', 'drivingForce', 'capacity', 'shearResistance', 'collapseNormal', 'collapseResistance', 'ratio'].every((name) => Number.isFinite(result[name])) && result.drivingForce > 0 && result.capacity > 0;
+      element('bolt-count').textContent = usable && Number.isSafeInteger(result.bolts) ? countFormat.format(result.bolts) : '\u2013';
+      element('result-status').textContent = usable ? (Number.isSafeInteger(result.bolts) ? 'Antall for R_d > F_d mot kollaps og ikke-negativ normalkraft. Skj\u00e6rbrudd kontrolleres separat.' : 'Ingen beregnbar boltel\u00f8sning med valgt retning, friksjon og kapasitet.') : 'Kontroller inndata for \u00e5 beregne. Ingen stabilitetskontroll er utf\u00f8rt.';
+      [['required-force', 'requiredForce'], ['driving-force', 'drivingForce'], ['design-capacity', 'capacity'], ['shear-resistance', 'shearResistance'], ['collapse-resistance', 'collapseResistance']].forEach(([id, key]) => {
+        element(id).textContent = usable && Number.isFinite(result[key]) ? numberFormat.format(result[key]) + ' kN' : '\u2013';
+      });
+      element('ratio').textContent = usable ? ratioFormat.format(result.ratio) : '\u2013';
+      if (usable) {
+        const shearPass = exceedsDemand(result.shearResistance, result.drivingForce) && result.normal >= 0;
+        const collapsePass = exceedsDemand(result.collapseResistance, result.drivingForce) && result.collapseNormal >= 0;
+        setCheck('shear-check', shearPass ? 'R_d > F_d. Kriteriet er oppfylt i denne modellen uten boltebidrag.' : 'Ikke dokumentert mot skj\u00e6rbrudd. Passive bolter gir ikke boltebidrag f\u00f8r bevegelse.', shearPass);
+        setCheck('collapse-check', collapsePass ? 'R_d > F_d med ' + values.installed + ' bolter. Kollapskriteriet er oppfylt i denne modellen.' : 'Kollapskriteriet er ikke oppfylt med ' + values.installed + ' bolter.', collapsePass);
+        setCheck('contact-check', 'Effektiv normalkraft: uten bolter ' + numberFormat.format(result.normal) + ' kN; med valgt antall ' + numberFormat.format(result.collapseNormal) + ' kN.' + (result.normal < 0 || result.collapseNormal < 0 ? ' Mulig kontakttap. Negativ normalkraft gir ingen dokumentert kontaktbasert friksjonskontroll.' : ''), result.normal >= 0 && result.collapseNormal >= 0);
+      } else {
+        ['shear-check', 'collapse-check', 'contact-check'].forEach((id) => setCheck(id, '\u2013', null));
+      }
+      const state = { example: isExample };
+      fields.forEach((name) => { state[name] = element(name).value; });
+      try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
+    }
+    function restore(state) {
+      fields.forEach((name) => { element(name).value = typeof state[name] === 'string' ? state[name] : defaults[name]; });
+      if (!['design', 'characteristic'].includes(element('capacity-basis').value)) element('capacity-basis').value = 'design';
+      const bolt = boltTypes.find((candidate) => candidate.id === element('bolt-type').value);
+      if (bolt) { element('capacity').value = String(bolt.capacity).replace('.', ','); element('capacity-basis').value = 'design'; }
+      else element('bolt-type').value = 'custom';
+      isExample = state.example === true;
+      update();
+    }
+    element('calculator').addEventListener('submit', (event) => event.preventDefault());
+    numericFields.forEach((name) => element(name).addEventListener('input', () => {
+      if (name === 'capacity' || name === 'gamma-bolt') element('bolt-type').value = 'custom';
+      update();
+    }));
+    element('capacity-basis').addEventListener('change', () => { element('bolt-type').value = 'custom'; update(); });
+    element('bolt-type').addEventListener('change', () => {
+      const bolt = boltTypes.find((candidate) => candidate.id === element('bolt-type').value);
+      if (bolt) { element('capacity').value = String(bolt.capacity).replace('.', ','); element('capacity-basis').value = 'design'; }
+      update();
+    });
+    element('reset').addEventListener('click', () => restore(defaults));
+    element('example').addEventListener('click', () => restore(example));
+    let initial = defaults;
+    try {
+      const stored = JSON.parse(localStorage.getItem(storageKey));
+      if (stored && typeof stored === 'object' && !Array.isArray(stored)) initial = { ...defaults, ...stored };
+    } catch {}
+    restore(initial);
+  </script>
+</body>
+</html>
