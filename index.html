@@ -22,14 +22,11 @@
     .subtitle { color: var(--muted); margin: 0; }
     .target { border-left: 3px solid var(--green); padding-left: 16px; flex-shrink: 0; }
     .target span { display: block; font-size: 12px; color: var(--muted); }
-    .target strong { font-size: 23px; font-weight: normal; }
+    .target output { display: block; font-size: 23px; font-weight: normal; }
     .workspace { display: grid; grid-template-columns: 1fr 0.9fr; gap: 40px; align-items: start; }
     h2 { font-size: 17px; margin: 0 0 18px; }
     .section-title { display: flex; justify-content: space-between; align-items: center; }
     .reset { border: 0; background: transparent; color: var(--green); text-decoration: underline; padding: 10px 0 10px 15px; font-size: 14px; min-height: 44px; }
-    .segmented { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 22px; }
-    .segmented button { border: 0; border-radius: 4px; background: transparent; color: var(--muted); padding: 11px; min-height: 46px; }
-    .segmented button[aria-pressed="true"] { color: var(--green); background: var(--paper); box-shadow: 0 1px 3px #182b2712; font-weight: bold; }
     .method-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
     .method-switch a { padding: 11px 8px; min-height: 46px; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 14px; }
     .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
@@ -89,21 +86,15 @@
     <nav class="method-switch" aria-label="Beregningsmetode"><a href="index.html" aria-current="page">Forenklet feltoverslag</a><a href="v225.html">V225 &middot; Partialfaktorer</a></nav>
     <div class="intro">
       <div><h1>Boltebehov</h1><p class="subtitle">Forenklet overslag for &eacute;n blokk</p></div>
-      <div class="target"><span>Antatt SF &rarr; m&aring;l</span><strong>1,0 &rarr; 1,5</strong></div>
+      <div class="target"><span>M&aring;lsikkerhetsfaktor</span><output id="target-display">1,5</output></div>
     </div>
     <div class="workspace">
       <form id="calculator" novalidate>
         <div class="section-title"><h2>Blokk og sikring</h2><button class="reset" type="button" id="reset">Nullstill</button></div>
-        <div class="segmented" role="group" aria-label="Beregn masse fra">
-          <button type="button" id="volume-mode" aria-pressed="true">Volum</button>
-          <button type="button" id="mass-mode" aria-pressed="false">Masse</button>
-        </div>
-        <div id="volume-fields">
-          <div class="field"><label for="volume">Blokkvolum</label><div class="input-wrap"><input id="volume" type="text" inputmode="decimal" value="4" autocomplete="off" aria-describedby="volume-error"><span class="unit">m&sup3;</span></div><p class="error" id="volume-error"></p></div>
-          <div class="field"><label for="density">Bergartens tetthet</label><div class="input-wrap"><input id="density" type="text" inputmode="decimal" value="2,7" autocomplete="off" aria-describedby="density-hint density-error"><span class="unit">t/m&sup3;</span></div><p class="hint" id="density-hint">Standardverdi 2,7. Tilpasses bergarten.</p><p class="error" id="density-error"></p></div>
-        </div>
-        <div class="field" id="mass-field" hidden><label for="mass">Blokkmasse</label><div class="input-wrap"><input id="mass" type="text" inputmode="decimal" value="10" autocomplete="off" aria-describedby="mass-error"><span class="unit">tonn</span></div><p class="error" id="mass-error"></p></div>
+        <div class="field"><label for="volume">Blokkvolum</label><div class="input-wrap"><input id="volume" type="text" inputmode="decimal" value="4" autocomplete="off" aria-describedby="volume-error"><span class="unit">m&sup3;</span></div><p class="error" id="volume-error"></p></div>
+        <div class="field"><label for="density">Bergartens tyngdetetthet</label><div class="input-wrap"><input id="density" type="text" inputmode="decimal" value="26,487" autocomplete="off" aria-describedby="density-hint density-error"><span class="unit">kN/m&sup3;</span></div><p class="hint" id="density-hint">Standardverdien tilsvarer tidligere 2,7 t/m&sup3;.</p><p class="error" id="density-error"></p></div>
         <div class="field"><label for="angle">Glideplanets helning fra horisontalen</label><div class="input-wrap"><input id="angle" type="text" inputmode="decimal" value="35" autocomplete="off" aria-describedby="angle-error"><span class="unit">grader</span></div><input id="angle-slider" type="range" min="0" max="90" step="1" value="35" aria-label="Glideplanets helning, skyveknapp"><div class="scale"><span>0&deg;</span><span>45&deg;</span><span>90&deg;</span></div><p class="error" id="angle-error"></p></div>
+        <div class="field"><label for="target-factor">M&aring;lsikkerhetsfaktor</label><div class="input-wrap"><input id="target-factor" type="text" inputmode="decimal" value="1,5" autocomplete="off" aria-describedby="target-hint target-factor-error"><span class="unit">SF</span></div><input id="target-slider" type="range" min="1" max="5" step="0.1" value="1.5" aria-label="Målsikkerhetsfaktor, skyveknapp"><div class="scale"><span>1,0</span><span>3,0</span><span>5,0</span></div><p class="hint" id="target-hint">Antar opprinnelig SF = 1,0. Velg m&aring;let for beregningen.</p><p class="error" id="target-factor-error"></p></div>
         <div class="field"><label for="bolt-type">Boltetype &ndash; passive bolter</label><select id="bolt-type" aria-describedby="bolt-type-hint"><option value="custom">Egendefinert kapasitet</option></select><p class="hint" id="bolt-type-hint">Dimensjonerende kapasiteter fra din tabell. 1 MN = 1000 kN.</p></div>
         <div class="field"><label for="capacity">Boltekapasitet langs glideplanet</label><div class="input-wrap"><input id="capacity" type="text" inputmode="decimal" value="100" autocomplete="off" aria-describedby="capacity-hint capacity-error"><span class="unit">kN/bolt</span></div><p class="hint" id="capacity-hint">Dimensjonerende, virksom kapasitet per bolt. 100 kN er kun en eksempelverdi, ikke en anbefaling.</p><p class="error" id="capacity-error"></p></div>
       </form>
@@ -114,7 +105,6 @@
             <div class="metric"><dt>N&oslash;dvendig sikringskraft</dt><dd id="required-force">&ndash;</dd></div>
             <div class="metric"><dt>Drivkraft langs planet</dt><dd id="driving-force">&ndash;</dd></div>
             <div class="metric"><dt>Blokkvekt</dt><dd id="weight">&ndash;</dd></div>
-            <div class="metric"><dt>Blokkmasse</dt><dd id="block-mass">&ndash;</dd></div>
           </dl>
           <svg class="sketch" viewBox="0 0 400 125" role="img" aria-label="Prinsippskisse: blokk p&aring; skr&aring;tt glideplan, drivkraft nedover og sikringskraft oppover langs planet">
             <defs><marker id="green-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#17614f"/></marker><marker id="red-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#b14b32"/></marker></defs>
@@ -128,9 +118,9 @@
       </section>
     </div>
     <details><summary>Beregningsgrunnlag og avgrensning</summary><div class="method">
-      <p>Eksisterende motstand antas lik drivkraften, slik at opprinnelig sikkerhetsfaktor er n&oslash;yaktig 1,0. M&aring;let er 1,5, alts&aring; et tillegg p&aring; 0,5. Alle bolter antas &aring; ha samme virksomme kapasitet og dele lasten.</p>
-      <div class="formula">W = m &middot; 9,81<br>D = W &middot; sin(&alpha;)<br>F<sub>sikring</sub> = 0,5 &middot; D<br>n = avrund opp(F<sub>sikring</sub> / C<sub>langs planet</sub>)</div>
-      <p>Masse i tonn gir vekt i kN med g = 9,81 m/s&sup2;. Helning &alpha; er mellom 0 og 90 grader fra horisontalen. Ved 0 grader gir modellen ingen drivkraft og dermed 0 bolter; dette er ikke en generell konklusjon om sikringsbehov.</p>
+      <p>Eksisterende motstand antas lik drivkraften, slik at opprinnelig sikkerhetsfaktor er n&oslash;yaktig 1,0. M&aring;lfaktoren velges i feltet, og alle bolter antas &aring; ha samme virksomme kapasitet og dele lasten.</p>
+      <div class="formula">W = V &middot; &rho;<sub>berg</sub><br>D = W &middot; sin(&alpha;)<br>F<sub>sikring</sub> = (SF<sub>m&aring;l</sub> &minus; 1,0) &middot; D<br>n = avrund opp(F<sub>sikring</sub> / C<sub>langs planet</sub>)</div>
+      <p>Bergartens tyngdetetthet oppgis i kN/m&sup3; og volum i m&sup3;, slik at blokkvekten beregnes direkte i kN. Helning &alpha; er mellom 0 og 90 grader fra horisontalen. Ved SF-m&aring;l 1,0 eller helning 0 grader gir modellen ingen drivkraft til sikring; dette er ikke en generell konklusjon om sikringsbehov.</p>
       <p>Boltekapasiteten skal v&aelig;re et dimensjonerende sikringsbidrag mot glidning, ikke ukritisk boltens bruddlast eller fulle aksialkapasitet. Hvis kun direkte aksialkraft regnes med, er bidraget langs planet T &middot; cos(&beta;), der &beta; er vinkelen mellom boltens virksomme kraft og motretningen til glidning.</p>
       <p>Valg av passiv bolt setter inn dimensjonerende kapasitet fra den brukeroppgitte tabellen, omregnet fra MN til kN. Det forutsetter at hele tabellkapasiteten virker mot glidning langs planet. Kapasitetene er ikke uavhengig verifisert; bolteretning, mobilisering og forankring m&aring; kontrolleres. Ved behov oppgis en redusert virksom kapasitet som egendefinert verdi.</p>
       <p>Modellen beregner ikke friksjon, kohesjon, vanntrykk, seismikk, &oslash;kt friksjon fra boltens normalkomponent, skj&aelig;rkapasitet, forankringsbrudd eller andre bruddmekanismer. Disse forholdene er ikke kontrollert av antakelsen SF = 1,0.</p>
@@ -138,7 +128,7 @@
     <footer>Verdier huskes i denne nettleseren. Ingen data sendes til en server.</footer>
   </main>
   <script>
-    const defaults = { mode: 'volume', boltType: 'custom', volume: '4', density: '2,7', mass: '10', angle: '35', capacity: '100' };
+    const defaults = { boltType: 'custom', volume: '4', density: '26,487', angle: '35', 'target-factor': '1,5', capacity: '100' };
     const boltTypes = [
       { id: 'diameter20', label: '\u00d820', capacityMN: 0.1256 },
       { id: 'diameter25', label: '\u00d825', capacityMN: 0.1964 },
@@ -149,10 +139,9 @@
       { id: 't40', label: 'T40', capacityMN: 0.42 }
     ];
     const storageKey = 'boltebehov-v1';
-    const fieldNames = ['volume', 'density', 'mass', 'angle', 'capacity'];
+    const fieldNames = ['volume', 'density', 'angle', 'target-factor', 'capacity'];
     const numberFormat = new Intl.NumberFormat('nb-NO', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
     const countFormat = new Intl.NumberFormat('nb-NO', { maximumFractionDigits: 0 });
-    let mode = 'volume';
     const element = (id) => document.getElementById(id);
     boltTypes.forEach((bolt) => {
       element('bolt-type').add(new Option(bolt.label + ' \u2014 ' + numberFormat.format(bolt.capacityMN * 1000) + ' kN', bolt.id));
@@ -165,22 +154,13 @@
       const normalized = value.trim().replace(',', '.');
       return /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized) ? Number(normalized) : NaN;
     }
-    function calculate(mass, angle, capacity) {
-      const weight = mass * 9.81;
+    function calculate(weight, angle, capacity, targetFactor) {
       const drivingForce = weight * Math.sin(angle * Math.PI / 180);
-      const requiredForce = 0.5 * drivingForce;
-      return { mass, weight, drivingForce, requiredForce, bolts: Math.ceil(requiredForce / capacity) };
-    }
-    function setMode(nextMode) {
-      mode = nextMode;
-      element('volume-fields').hidden = mode !== 'volume';
-      element('mass-field').hidden = mode !== 'mass';
-      element('volume-mode').setAttribute('aria-pressed', String(mode === 'volume'));
-      element('mass-mode').setAttribute('aria-pressed', String(mode === 'mass'));
-      update();
+      const requiredForce = (targetFactor - 1) * drivingForce;
+      return { weight, drivingForce, requiredForce, bolts: Math.ceil(requiredForce / capacity) };
     }
     function save() {
-      const state = { mode, boltType: element('bolt-type').value };
+      const state = { boltType: element('bolt-type').value };
       fieldNames.forEach((name) => { state[name] = element(name).value; });
       try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
     }
@@ -189,28 +169,28 @@
       element('capacity-hint').textContent = bolt
         ? 'Tabellkapasitet ' + numberFormat.format(bolt.capacityMN * 1000) + ' kN. Forutsetter at hele kapasiteten virker mot glidning langs planet. Reduser verdien ved behov for bolteretning og forankring.'
         : 'Dimensjonerende, virksom kapasitet per bolt. 100 kN er kun en eksempelverdi, ikke en anbefaling.';
-      const activeFields = mode === 'volume' ? ['volume', 'density', 'angle', 'capacity'] : ['mass', 'angle', 'capacity'];
       const values = {};
       let valid = true;
       fieldNames.forEach((name) => {
         const input = element(name);
         const value = parseNumber(input.value);
-        const active = activeFields.includes(name);
-        const acceptable = Number.isFinite(value) && (name === 'angle' ? value >= 0 && value <= 90 : value > 0);
-        const invalid = active && !acceptable;
+        const acceptable = Number.isFinite(value) && (name === 'angle' ? value >= 0 && value <= 90 : name === 'target-factor' ? value >= 1 && value <= 5 : value > 0);
+        const invalid = !acceptable;
         input.setAttribute('aria-invalid', String(invalid));
-        element(name + '-error').textContent = invalid ? (name === 'angle' ? 'Oppgi en helning fra 0 til 90 grader.' : 'Oppgi et tall st\u00f8rre enn 0.') : '';
+        element(name + '-error').textContent = invalid ? (name === 'angle' ? 'Oppgi en helning fra 0 til 90 grader.' : name === 'target-factor' ? 'Oppgi en m\u00e5lsikkerhetsfaktor mellom 1,0 og 5,0.' : 'Oppgi et tall st\u00f8rre enn 0.') : '';
         if (invalid) valid = false;
         values[name] = value;
       });
       if (Number.isFinite(values.angle) && values.angle >= 0 && values.angle <= 90) element('angle-slider').value = String(values.angle);
-      const mass = mode === 'volume' ? values.volume * values.density : values.mass;
-      const result = valid ? calculate(mass, values.angle, values.capacity) : null;
-      const usable = result && Object.values(result).every(Number.isFinite) && mass > 0 && Number.isSafeInteger(result.bolts);
+      if (Number.isFinite(values['target-factor']) && values['target-factor'] >= 1 && values['target-factor'] <= 5) element('target-slider').value = String(values['target-factor']);
+      element('target-display').textContent = Number.isFinite(values['target-factor']) ? numberFormat.format(values['target-factor']) : '\u2013';
+      const weight = values.volume * values.density;
+      const result = valid ? calculate(weight, values.angle, values.capacity, values['target-factor']) : null;
+      const usable = result && Object.values(result).every(Number.isFinite) && weight > 0 && Number.isSafeInteger(result.bolts);
       element('bolt-count').textContent = usable ? countFormat.format(result.bolts) : '\u2013';
       element('bolt-unit').textContent = usable && result.bolts === 1 ? 'bolt' : 'bolter';
       element('result-status').textContent = usable ? (result.bolts === 0 ? 'Ingen drivkraft langs planet i denne modellen.' : 'Rundet opp til n\u00e6rmeste hele bolt.') : (valid ? 'Tallene er for store eller sm\u00e5. Kontroller verdiene.' : 'Kontroller feltene for \u00e5 beregne boltebehov.');
-      [['required-force', 'requiredForce', 'kN'], ['driving-force', 'drivingForce', 'kN'], ['weight', 'weight', 'kN'], ['block-mass', 'mass', 't']].forEach(([id, key, unit]) => {
+      [['required-force', 'requiredForce', 'kN'], ['driving-force', 'drivingForce', 'kN'], ['weight', 'weight', 'kN']].forEach(([id, key, unit]) => {
         element(id).textContent = usable ? numberFormat.format(result[key]) + ' ' + unit : '\u2013';
       });
       save();
@@ -222,12 +202,11 @@
     }));
     element('bolt-type').addEventListener('change', () => { applyBoltType(); update(); });
     element('angle-slider').addEventListener('input', () => { element('angle').value = element('angle-slider').value; update(); });
-    element('volume-mode').addEventListener('click', () => setMode('volume'));
-    element('mass-mode').addEventListener('click', () => setMode('mass'));
+    element('target-slider').addEventListener('input', () => { element('target-factor').value = element('target-slider').value.replace('.', ','); update(); });
     element('reset').addEventListener('click', () => {
       fieldNames.forEach((name) => { element(name).value = defaults[name]; });
       element('bolt-type').value = defaults.boltType;
-      setMode(defaults.mode);
+      update();
     });
     let initial = defaults;
     try {
@@ -237,7 +216,7 @@
     fieldNames.forEach((name) => { element(name).value = typeof initial[name] === 'string' ? initial[name] : defaults[name]; });
     element('bolt-type').value = boltTypes.some((bolt) => bolt.id === initial.boltType) ? initial.boltType : 'custom';
     applyBoltType();
-    setMode(initial.mode === 'mass' ? 'mass' : 'volume');
+    update();
   </script>
 </body>
 </html>
