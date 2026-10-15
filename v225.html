@@ -137,6 +137,7 @@
             <div class="metric"><dt>Aksial boltekraft ved likevekt</dt><dd id="required-force">&ndash;</dd></div>
             <div class="metric"><dt>Dimensjonerende drivkraft F<sub>d</sub></dt><dd id="driving-force">&ndash;</dd></div>
             <div class="metric"><dt>Dimensjonerende vannkraft U<sub>d</sub></dt><dd id="result-water">&ndash;</dd></div>
+            <div class="metric"><dt>Normalkraft uten bolter G<sub>n</sub> &minus; U<sub>d</sub> &minus; F<sub>n</sub></dt><dd id="normal-force">&ndash;</dd></div>
             <div class="metric"><dt>Aksialkapasitet C<sub>d</sub> per bolt</dt><dd id="design-capacity">&ndash;</dd></div>
             <div class="metric"><dt>Skj&aelig;rbrudd: R<sub>d</sub> uten boltebidrag</dt><dd id="shear-resistance">&ndash;</dd></div>
             <div class="metric"><dt>Kollaps: R<sub>d</sub> med valgt antall</dt><dd id="collapse-resistance">&ndash;</dd></div>
@@ -223,7 +224,7 @@
         const checkedResistance = checkedNormal * residual + bolts * capacity * cosine;
         if (!exceedsDemand(checkedResistance, drivingForce) || checkedNormal < 0) bolts = Infinity;
       }
-      return { normal, drivingForce, capacity, shearResistance, collapseNormal, collapseResistance, requiredForce, bolts, ratio: collapseResistance / drivingForce };
+      return { weight: values.weight, water: values.water, normal, drivingForce, capacity, shearResistance, collapseNormal, collapseResistance, requiredForce, bolts, ratio: collapseResistance / drivingForce };
     }
     function setCheck(id, message, pass) {
       element(id).textContent = message;
@@ -267,7 +268,7 @@
       const usable = result && Number.isFinite(values.weight) && Number.isFinite(values.water) && ['normal', 'drivingForce', 'capacity', 'shearResistance', 'collapseNormal', 'collapseResistance', 'ratio'].every((name) => Number.isFinite(result[name])) && result.drivingForce > 0 && result.capacity > 0;
       element('bolt-count').textContent = usable && Number.isSafeInteger(result.bolts) ? countFormat.format(result.bolts) : '\u2013';
       element('result-status').textContent = usable ? (Number.isSafeInteger(result.bolts) ? 'Antall for R_d > F_d mot kollaps og ikke-negativ normalkraft. Skj\u00e6rbrudd kontrolleres separat.' : 'Ingen beregnbar boltel\u00f8sning med valgt retning, friksjon og kapasitet.') : 'Kontroller inndata for \u00e5 beregne. Ingen stabilitetskontroll er utf\u00f8rt.';
-      [['result-weight', 'weight'], ['result-water', 'water'], ['required-force', 'requiredForce'], ['driving-force', 'drivingForce'], ['design-capacity', 'capacity'], ['shear-resistance', 'shearResistance'], ['collapse-resistance', 'collapseResistance']].forEach(([id, key]) => {
+      [['result-weight', 'weight'], ['result-water', 'water'], ['normal-force', 'normal'], ['required-force', 'requiredForce'], ['driving-force', 'drivingForce'], ['design-capacity', 'capacity'], ['shear-resistance', 'shearResistance'], ['collapse-resistance', 'collapseResistance']].forEach(([id, key]) => {
         element(id).textContent = usable && Number.isFinite(result[key]) ? numberFormat.format(result[key]) + ' kN' : '\u2013';
       });
       element('ratio').textContent = usable ? ratioFormat.format(result.ratio) : '\u2013';
