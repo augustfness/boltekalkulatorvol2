@@ -93,8 +93,12 @@
           <div class="field"><label for="plane2-direction">Fallretning</label><div class="input-wrap"><input id="plane2-direction" type="text" inputmode="decimal" aria-describedby="plane2-direction-hint plane2-direction-error"><span class="unit">grader</span></div><p class="hint" id="plane2-direction-hint">Azimut med klokken fra nord.</p><p class="error" id="plane2-direction-error"></p></div>
           <div class="field"><label for="plane2-dip">Fallvinkel</label><div class="input-wrap"><input id="plane2-dip" type="text" inputmode="decimal" aria-describedby="plane2-dip-error"><span class="unit">grader</span></div><p class="error" id="plane2-dip-error"></p></div>
         </div>
-        <h3>Friksjon</h3>
-        <div class="field"><label for="friction">Friksjonsvinkel p&aring; sprekkplanene</label><div class="input-wrap"><input id="friction" type="text" inputmode="decimal" aria-describedby="friction-hint friction-error"><span class="unit">grader</span></div><p class="hint" id="friction-hint">F&oslash;rste screening antar samme friksjonsvinkel p&aring; begge plan.</p><p class="error" id="friction-error"></p></div>
+        <h3>Friksjonsvinkler</h3>
+        <div class="pair">
+          <div class="field"><label for="friction1">Sprekkplan 1 &middot; &phi;<sub>1</sub></label><div class="input-wrap"><input id="friction1" type="text" inputmode="decimal" aria-describedby="friction-hint friction1-error"><span class="unit">grader</span></div><p class="error" id="friction1-error"></p></div>
+          <div class="field"><label for="friction2">Sprekkplan 2 &middot; &phi;<sub>2</sub></label><div class="input-wrap"><input id="friction2" type="text" inputmode="decimal" aria-describedby="friction-hint friction2-error"><span class="unit">grader</span></div><p class="error" id="friction2-error"></p></div>
+        </div>
+        <p class="hint" id="friction-hint">Denne enkle screeningen krever at linjefallet overstiger friksjonsvinkelen p&aring; begge plan.</p>
       </form>
       <section aria-label="Kinematisk analyseresultat">
         <div class="results" aria-live="polite" aria-atomic="true">
@@ -105,8 +109,9 @@
             <div class="metric"><dt>Skj&aelig;ringsflatens tilsynelatende fall</dt><dd id="apparent-dip">&ndash;</dd></div>
           </dl>
           <div class="checks">
-            <div class="check"><strong>1. Linjen daglyser ut gjennom skj&aelig;ringsflaten</strong><p id="daylight-check">&ndash;</p></div>
-            <div class="check"><strong>2. Linjefallet overstiger friksjonsvinkelen</strong><p id="friction-check">&ndash;</p></div>
+            <div class="check"><strong>1. Skj&aelig;ringslinjen kommer til syne i skr&aring;ningsflaten</strong><p id="daylight-check">&ndash;</p></div>
+            <div class="check"><strong>2. Linjefallet overstiger friksjonsvinkelen p&aring; plan 1</strong><p id="friction1-check">&ndash;</p></div>
+            <div class="check"><strong>3. Linjefallet overstiger friksjonsvinkelen p&aring; plan 2</strong><p id="friction2-check">&ndash;</p></div>
           </div>
         </div>
         <p class="warning"><strong>Screening, ikke stabilitetsberegning.</strong> «Kinematisk mulig» betyr at orienteringene tillater utglidning etter denne enkle geometriske/friksjonskontrollen. Verkt&oslash;yet beregner ikke kilevekt, vanntrykk, kohesjon, normalspenningsfordeling, boltvirkning eller sikkerhetsfaktor. Et mulig brudd betyr ikke at kilen faktisk er ustabil.</p>
@@ -114,16 +119,16 @@
     </div>
     <details><summary>Beregningsgrunnlag og begrensninger</summary><div class="method">
       <p>Orienteringer oppgis som fallretning (azimut med klokken fra nord) og fallvinkel fra horisontalplanet. Skj&aelig;ringslinjen beregnes som kryssproduktet av planenes normalvektorer. Den nedadrettede retningen langs linjen brukes i kontrollen.</p>
-      <div class="formula">n = n<sub>1</sub> &times; n<sub>2</sub><br>Linjen daglyser dersom retningen peker mot skj&aelig;ringsflaten og linjefallet er mindre enn skj&aelig;ringsflatens tilsynelatende fall i samme retning.<br>Friksjonsscreening: linjefall &gt; valgt &phi;.</div>
-      <p>Modellen antar én sammenhengende kile avgrenset av to plan og en skj&aelig;ringsflate, samt samme friksjonsvinkel p&aring; begge plan. Den tar ikke hensyn til planenes utstrekning, sprekkavslutninger, kilevolum, kohesjon, vann, last, spenning, bolter eller andre bruddmekanismer. Orienteringsm&aring;linger og geologisk tolkning m&aring; kvalitetssikres i felt.</p>
+      <div class="formula">n = n<sub>1</sub> &times; n<sub>2</sub><br>Skj&aelig;ringslinjen kommer til syne i skr&aring;ningsflaten n&aring;r den faller ut mot flaten og linjefallet er mindre enn flatens tilsynelatende fall i samme retning.<br>Enkel friksjonsscreening: linjefall &gt; &phi;<sub>1</sub> og linjefall &gt; &phi;<sub>2</sub>.</div>
+      <p>Ved ulike friksjonsvinkler krever screeningen at linjefallet overstiger begge. Dette er et enkelt filter, ikke en full kraftlikevektsanalyse; en kile som ikke passerer filteret kan likevel trenge n&aelig;rmere 3D-vurdering. Modellen tar heller ikke hensyn til planenes utstrekning, sprekkavslutninger, kilevolum, kohesjon, vann, last, spenning, bolter eller andre bruddmekanismer. Orienteringsm&aring;linger og geologisk tolkning m&aring; kvalitetssikres i felt.</p>
     </div></details>
     <footer>Inndata lagres lokalt i denne nettleseren. Ingen data sendes til en server.</footer>
   </main>
   <script>
     const element = (id) => document.getElementById(id);
     const storageKey = 'boltebehov-kile-v1';
-    const defaults = { 'slope-direction': '', 'slope-dip': '', 'plane1-direction': '', 'plane1-dip': '', 'plane2-direction': '', 'plane2-dip': '', friction: '' };
-    const example = { 'slope-direction': '0', 'slope-dip': '60', 'plane1-direction': '315', 'plane1-dip': '45', 'plane2-direction': '45', 'plane2-dip': '45', friction: '25' };
+    const defaults = { 'slope-direction': '', 'slope-dip': '', 'plane1-direction': '', 'plane1-dip': '', 'plane2-direction': '', 'plane2-dip': '', friction1: '', friction2: '' };
+    const example = { 'slope-direction': '0', 'slope-dip': '60', 'plane1-direction': '315', 'plane1-dip': '45', 'plane2-direction': '45', 'plane2-dip': '45', friction1: '25', friction2: '25' };
     const fieldNames = Object.keys(defaults);
     const numberFormat = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     const directionFormat = new Intl.NumberFormat('nb-NO', { maximumFractionDigits: 0 });
@@ -158,8 +163,9 @@
         : 0;
       const downhillOutward = line.z < -1e-10 && outwardComponent > 1e-10;
       const daylights = downhillOutward && plunge < apparentDip - 1e-8;
-      const overcomesFriction = plunge > values.friction + 1e-8;
-      return { trend, plunge, apparentDip, downhillOutward, daylights, overcomesFriction };
+      const overcomesFriction1 = plunge > values.friction1 + 1e-8;
+      const overcomesFriction2 = plunge > values.friction2 + 1e-8;
+      return { trend, plunge, apparentDip, downhillOutward, daylights, overcomesFriction1, overcomesFriction2 };
     }
     function setCheck(id, text, pass) {
       element(id).textContent = text;
@@ -172,10 +178,10 @@
       fieldNames.forEach((name) => {
         const value = values[name];
         const directionField = name.endsWith('direction');
-        const frictionField = name === 'friction';
+        const frictionField = name === 'friction1' || name === 'friction2';
         const validValue = Number.isFinite(value) && (directionField ? value >= 0 && value <= 360 : frictionField ? value >= 0 && value < 90 : value > 0 && value < 90);
         element(name).setAttribute('aria-invalid', String(!validValue));
-        element(name + '-error').textContent = validValue ? '' : directionField ? 'Oppgi en fallretning fra 0 til 360 grader.' : frictionField ? 'Oppgi en friksjonsvinkel fra 0 til under 90 grader.' : 'Oppgi en fallvinkel større enn 0 og mindre enn 90 grader.';
+        element(name + '-error').textContent = validValue ? '' : directionField ? 'Oppgi en fallretning fra 0 til 360 grader.' : frictionField ? 'Oppgi en friksjonsvinkel fra 0 til under 90 grader.' : 'Oppgi en fallvinkel st\u00f8rre enn 0 og mindre enn 90 grader.';
         if (!validValue) valid = false;
       });
       const result = valid ? calculate(values) : null;
@@ -185,16 +191,18 @@
         element('verdict').textContent = valid ? 'Ingen unik skjæringslinje' : 'Legg inn planorienteringer';
         element('status').textContent = valid ? 'Planene er parallelle eller nesten parallelle.' : 'Kontroller feltene for å beregne.';
         setCheck('daylight-check', valid ? 'Planene danner ikke en entydig kilelinje.' : '\u2013', valid ? false : null);
-        setCheck('friction-check', '\u2013', null);
+        setCheck('friction1-check', '\u2013', null);
+        setCheck('friction2-check', '\u2013', null);
       } else {
         element('line-direction').textContent = directionFormat.format(result.trend) + '\u00b0';
         element('line-plunge').textContent = numberFormat.format(result.plunge) + '\u00b0';
         element('apparent-dip').textContent = numberFormat.format(result.apparentDip) + '\u00b0';
-        setCheck('daylight-check', result.daylights ? 'Ja. Linjen faller ut gjennom skjæringsflaten.' : result.downhillOutward ? 'Nei. Linjen er brattere enn skjæringsflatens tilsynelatende fall.' : 'Nei. Linjen faller ikke nedover og ut mot skjæringsflaten.', result.daylights);
-        setCheck('friction-check', result.overcomesFriction ? 'Ja. Linjefallet overstiger valgt friksjonsvinkel.' : 'Nei. Linjefallet overstiger ikke valgt friksjonsvinkel.', result.overcomesFriction);
-        const possible = result.daylights && result.overcomesFriction;
+        setCheck('daylight-check', result.daylights ? 'Ja. Skjæringslinjen kommer til syne i skråningsflaten.' : result.downhillOutward ? 'Nei. Linjen er brattere enn skjæringsflatens tilsynelatende fall.' : 'Nei. Linjen peker ikke nedover og ut mot skråningsflaten.', result.daylights);
+        setCheck('friction1-check', result.overcomesFriction1 ? 'Ja. Linjefallet overstiger φ₁ = ' + numberFormat.format(values.friction1) + '°.' : 'Nei. Linjefallet overstiger ikke φ₁ = ' + numberFormat.format(values.friction1) + '°.', result.overcomesFriction1);
+        setCheck('friction2-check', result.overcomesFriction2 ? 'Ja. Linjefallet overstiger φ₂ = ' + numberFormat.format(values.friction2) + '°.' : 'Nei. Linjefallet overstiger ikke φ₂ = ' + numberFormat.format(values.friction2) + '°.', result.overcomesFriction2);
+        const possible = result.daylights && result.overcomesFriction1 && result.overcomesFriction2;
         element('verdict').textContent = possible ? 'Kinematisk mulig' : 'Ikke indikert';
-        const resultText = possible ? 'Begge screeningkriteriene er oppfylt.' : result.daylights ? 'Kilen daglyser, men friksjonskriteriet er ikke oppfylt.' : 'Kilen daglyser ikke gjennom skjæringsflaten.';
+        const resultText = possible ? 'Utgangs- og friksjonskriteriene er oppfylt for begge plan.' : result.daylights ? 'Skjæringslinjen kommer til syne i skråningsflaten, men overstiger ikke begge friksjonsvinklene.' : 'Skjæringslinjen kommer ikke til syne i skråningsflaten.';
         element('status').textContent = isExample ? 'Testeksempel. ' + resultText : resultText;
       }
       const state = { example: isExample };
@@ -215,6 +223,10 @@
       const stored = JSON.parse(localStorage.getItem(storageKey));
       if (stored && typeof stored === 'object' && !Array.isArray(stored)) initial = { ...defaults, ...stored };
     } catch {}
+    if (typeof initial.friction === 'string' && !initial.friction1 && !initial.friction2) {
+      initial.friction1 = initial.friction;
+      initial.friction2 = initial.friction;
+    }
     restore(initial);
   </script>
 </body>
