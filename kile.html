@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#17614f">
+  <meta name="theme-color" content="#006879">
   <title>Kileanalyse | Kinematisk screening</title>
   <style>
-    :root { --ink: #182b27; --muted: #546963; --green: #17614f; --line: #d8e3dd; --paper: #fff; --accent: #b14b32; }
+    :root { --ink: #17364a; --muted: #455f70; --green: #006879; --line: #c8dbe4; --paper: #fff; --accent: #d66b55; --page: #edf5f8; --tab: #dcebf1; --field-border: #7896a5; --surface: #f7fafc; --danger: #963b42; }
     * { box-sizing: border-box; }
-    body { margin: 0; color: var(--ink); background: #f1f5f3; font-family: 'Trebuchet MS', sans-serif; line-height: 1.5; }
+    body { margin: 0; color: var(--ink); background: var(--page); font-family: 'Trebuchet MS', sans-serif; line-height: 1.5; }
     button, input { font: inherit; }
     button { cursor: pointer; }
     :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
@@ -16,7 +16,7 @@
     .header-inner { max-width: 1050px; margin: auto; padding: 18px 28px; display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
     .brand { color: var(--green); font-weight: bold; text-transform: uppercase; }
     main { max-width: 1050px; margin: auto; padding: 28px; }
-    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 26px; }
+    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: var(--tab); border-radius: 6px; margin-bottom: 26px; }
     .method-switch a { min-height: 46px; padding: 9px 5px; display: flex; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 13px; line-height: 1.25; }
     .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
     h1 { font: normal 36px/1.15 Georgia, serif; margin: 0 0 7px; }
@@ -31,11 +31,11 @@
     .field { margin-bottom: 17px; }
     label { display: block; margin-bottom: 7px; font-size: 14px; font-weight: bold; }
     .input-wrap { position: relative; }
-    .input-wrap input { width: 100%; min-height: 52px; padding: 11px 58px 11px 12px; color: var(--ink); background: white; border: 1px solid #a7bbb0; border-radius: 5px; font-size: 20px; font-variant-numeric: tabular-nums; }
+    .input-wrap input { width: 100%; min-height: 52px; padding: 11px 58px 11px 12px; color: var(--ink); background: var(--paper); border: 1px solid var(--field-border); border-radius: 5px; font-size: 20px; font-variant-numeric: tabular-nums; }
     .input-wrap input[aria-invalid="true"] { border-color: var(--accent); }
     .unit { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 13px; }
     .hint, .error { margin: 6px 0 0; color: var(--muted); font-size: 12px; }
-    .error { color: #a43822; }
+    .error { color: var(--danger); }
     .error:empty { display: none; }
     .results { overflow: hidden; background: white; border: 1px solid var(--line); border-radius: 8px; }
     .result-main { padding: 22px; color: white; background: var(--green); }
@@ -52,8 +52,18 @@
     .check strong { font-size: 13px; }
     .check p { margin: 4px 0 0; font-size: 13px; }
     .pass { color: var(--green); }
-    .fail { color: #a43822; }
+    .fail { color: var(--danger); }
     .warning { margin: 17px 0 0; padding-left: 12px; border-left: 3px solid var(--accent); color: var(--muted); font-size: 13px; }
+    .stereonet { margin-top: 24px; }
+    .stereonet h2 { margin-bottom: 4px; }
+    .stereonet-intro, .stereonet-note { color: var(--muted); font-size: 12px; margin: 0; }
+    .stereonet-figure { max-width: 460px; margin: 12px auto 8px; }
+    #stereonet { display: block; width: 100%; height: auto; }
+    .stereonet-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px 12px; max-width: 460px; margin: 12px auto; padding: 0; list-style: none; font-size: 12px; }
+    .stereonet-legend li { display: flex; align-items: center; gap: 7px; min-width: 0; }
+    .swatch { width: 22px; height: 0; flex: 0 0 22px; border-top: 2px solid var(--swatch); }
+    .swatch-dot { width: 10px; height: 10px; flex: 0 0 10px; border-radius: 50%; background: var(--swatch); margin: 0 6px; }
+    .swatch-area { width: 16px; height: 12px; flex: 0 0 16px; border: 1px solid var(--swatch); background: color-mix(in srgb, var(--swatch) 25%, white); }
     details { margin-top: 25px; padding-top: 13px; border-top: 1px solid var(--line); font-size: 14px; }
     summary { min-height: 44px; color: var(--green); cursor: pointer; font-weight: bold; }
     .method { max-width: 780px; color: var(--muted); }
@@ -102,24 +112,39 @@
       </form>
       <section aria-label="Kinematisk analyseresultat">
         <div class="results" aria-live="polite" aria-atomic="true">
-          <div class="result-main"><h2>Kinematisk mulighet for utglidning</h2><output id="verdict">Legg inn planorienteringer</output><p id="status" class="result-note">Geometrien kontrolleres n&aring;r inndataene er gyldige.</p></div>
+          <div class="result-main"><h2>Kinematisk kontroll &middot; geometri</h2><output id="verdict">Legg inn planorienteringer</output><p id="status" class="result-note">Geometrien kontrolleres n&aring;r inndataene er gyldige.</p></div>
           <dl class="metrics">
             <div class="metric"><dt>Skj&aelig;ringslinje, fallretning</dt><dd id="line-direction">&ndash;</dd></div>
             <div class="metric"><dt>Skj&aelig;ringslinje, fallvinkel</dt><dd id="line-plunge">&ndash;</dd></div>
             <div class="metric"><dt>Skj&aelig;ringsflatens tilsynelatende fall</dt><dd id="apparent-dip">&ndash;</dd></div>
           </dl>
           <div class="checks">
-            <div class="check"><strong>1. Skj&aelig;ringslinjen kommer til syne i skr&aring;ningsflaten</strong><p id="daylight-check">&ndash;</p></div>
+            <div class="check"><strong>1. Er utglidning kinematisk mulig?</strong><p id="daylight-check">&ndash;</p></div>
             <div class="check"><strong>2. Linjefallet overstiger friksjonsvinkelen p&aring; plan 1</strong><p id="friction1-check">&ndash;</p></div>
             <div class="check"><strong>3. Linjefallet overstiger friksjonsvinkelen p&aring; plan 2</strong><p id="friction2-check">&ndash;</p></div>
+            <div class="check"><strong>Glidning &middot; enkel friksjonsscreening</strong><p id="sliding-check">&ndash;</p></div>
           </div>
         </div>
-        <p class="warning"><strong>Screening, ikke stabilitetsberegning.</strong> «Kinematisk mulig» betyr at orienteringene tillater utglidning etter denne enkle geometriske/friksjonskontrollen. Verkt&oslash;yet beregner ikke kilevekt, vanntrykk, kohesjon, normalspenningsfordeling, boltvirkning eller sikkerhetsfaktor. Et mulig brudd betyr ikke at kilen faktisk er ustabil.</p>
+        <p class="warning"><strong>Screening, ikke stabilitetsberegning.</strong> «Kinematisk mulig» betyr bare at skj&aelig;ringslinjen har en geometrisk utgang i skr&aring;ningsflaten. Friksjonsvinklene vises i egne kontroller. At linjefallet overstiger begge vinklene er en enkel screening, ikke en full vurdering av om kilen faktisk glir. Verkt&oslash;yet beregner ikke kilevekt, vanntrykk, kohesjon, normalspenningsfordeling, boltvirkning eller sikkerhetsfaktor.</p>
+        <div class="stereonet" aria-labelledby="stereonet-title">
+          <h2 id="stereonet-title">Stereonett &middot; nedre halvkule</h2>
+          <p class="stereonet-intro">Likevinklet projeksjon. Storsirkler viser planorienteringene; punktet viser skj&aelig;ringslinjens fallretning og fall.</p>
+          <figure class="stereonet-figure"><svg id="stereonet" viewBox="0 0 360 360" role="img" aria-label="Stereonett med orienteringer og kilelinje"></svg></figure>
+          <ul class="stereonet-legend" aria-label="Tegnforklaring for stereonett">
+            <li><span class="swatch" style="--swatch:#182b27"></span>Skj&aelig;ringsflate</li>
+            <li><span class="swatch" style="--swatch:#17614f"></span>Sprekkplan 1</li>
+            <li><span class="swatch" style="--swatch:#376da5"></span>Sprekkplan 2</li>
+            <li><span class="swatch-dot" style="--swatch:#b14b32"></span>Skj&aelig;ringslinje</li>
+            <li><span class="swatch-area" style="--swatch:#d3b82f"></span>Mulig geometrisk utgang</li>
+            <li><span class="swatch-area" style="--swatch:#b14b32"></span>Linjefall over begge &phi;</li>
+          </ul>
+          <p id="stereonet-note" class="stereonet-note" aria-live="polite">Fyll inn orienteringene for &aring; vise plan og skj&aelig;ringslinje.</p>
+        </div>
       </section>
     </div>
     <details><summary>Beregningsgrunnlag og begrensninger</summary><div class="method">
       <p>Orienteringer oppgis som fallretning (azimut med klokken fra nord) og fallvinkel fra horisontalplanet. Skj&aelig;ringslinjen beregnes som kryssproduktet av planenes normalvektorer. Den nedadrettede retningen langs linjen brukes i kontrollen.</p>
-      <div class="formula">n = n<sub>1</sub> &times; n<sub>2</sub><br>Skj&aelig;ringslinjen kommer til syne i skr&aring;ningsflaten n&aring;r den faller ut mot flaten og linjefallet er mindre enn flatens tilsynelatende fall i samme retning.<br>Enkel friksjonsscreening: linjefall &gt; &phi;<sub>1</sub> og linjefall &gt; &phi;<sub>2</sub>.</div>
+      <div class="formula">n = n<sub>1</sub> &times; n<sub>2</sub><br>Kinematisk mulig dersom skj&aelig;ringslinjen peker ut mot skr&aring;ningsflaten og linjefallet er mindre enn flatens tilsynelatende fall i samme retning.<br>Separat, enkel friksjonsscreening: linjefall &gt; &phi;<sub>1</sub> og linjefall &gt; &phi;<sub>2</sub>.</div>
       <p>Ved ulike friksjonsvinkler krever screeningen at linjefallet overstiger begge. Dette er et enkelt filter, ikke en full kraftlikevektsanalyse; en kile som ikke passerer filteret kan likevel trenge n&aelig;rmere 3D-vurdering. Modellen tar heller ikke hensyn til planenes utstrekning, sprekkavslutninger, kilevolum, kohesjon, vann, last, spenning, bolter eller andre bruddmekanismer. Orienteringsm&aring;linger og geologisk tolkning m&aring; kvalitetssikres i felt.</p>
     </div></details>
     <footer>Inndata lagres lokalt i denne nettleseren. Ingen data sendes til en server.</footer>
@@ -167,6 +192,108 @@
       const overcomesFriction2 = plunge > values.friction2 + 1e-8;
       return { trend, plunge, apparentDip, downhillOutward, daylights, overcomesFriction1, overcomesFriction2 };
     }
+    function appendSvg(parent, name, attributes = {}, text = '') {
+      const node = document.createElementNS('http://www.w3.org/2000/svg', name);
+      Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, String(value)));
+      if (text) node.textContent = text;
+      parent.appendChild(node);
+      return node;
+    }
+    function projectLineation(trend, plunge, center, radius) {
+      const radial = radius * Math.tan((90 - plunge) * radians / 2);
+      return { x: center + radial * Math.sin(trend * radians), y: center - radial * Math.cos(trend * radians) };
+    }
+    function greatCirclePath(direction, dip, center, radius) {
+      const normal = planeNormal(direction, dip);
+      const reference = Math.abs(normal.z) < 0.9 ? { x: 0, y: 0, z: 1 } : { x: 1, y: 0, z: 0 };
+      const first = cross(normal, reference);
+      const firstLength = Math.hypot(first.x, first.y, first.z);
+      const basis1 = { x: first.x / firstLength, y: first.y / firstLength, z: first.z / firstLength };
+      const second = cross(normal, basis1);
+      const segments = [];
+      let segment = [];
+      for (let sample = 0; sample <= 720; sample += 1) {
+        const angle = sample * Math.PI * 2 / 720;
+        const point = {
+          x: basis1.x * Math.cos(angle) + second.x * Math.sin(angle),
+          y: basis1.y * Math.cos(angle) + second.y * Math.sin(angle),
+          z: basis1.z * Math.cos(angle) + second.z * Math.sin(angle)
+        };
+        if (point.z <= 1e-9) {
+          const plunge = Math.asin(Math.max(-1, Math.min(1, -point.z))) * degrees;
+          const trend = (Math.atan2(point.x, point.y) * degrees + 360) % 360;
+          segment.push(projectLineation(trend, plunge, center, radius));
+        } else if (segment.length > 1) {
+          segments.push(segment);
+          segment = [];
+        } else {
+          segment = [];
+        }
+      }
+      if (segment.length > 1) segments.push(segment);
+      return segments.map((points) => points.map((point, index) => (index === 0 ? 'M' : 'L') + point.x.toFixed(2) + ' ' + point.y.toFixed(2)).join(' ')).join(' ');
+    }
+    function daylightRegion(direction, dip, center, radius) {
+      const points = [];
+      const start = direction - 90;
+      for (let sample = 0; sample <= 180; sample += 1) {
+        const trend = start + sample;
+        const apparentDip = Math.atan(Math.tan(dip * radians) * Math.max(0, Math.cos((trend - direction) * radians))) * degrees;
+        points.push(projectLineation(trend, apparentDip, center, radius));
+      }
+      for (let sample = 180; sample >= 0; sample -= 1) points.push(projectLineation(start + sample, 0, center, radius));
+      return points.map((point, index) => (index === 0 ? 'M' : 'L') + point.x.toFixed(2) + ' ' + point.y.toFixed(2)).join(' ') + ' Z';
+    }
+    function drawStereonet(values, result, valid) {
+      const svg = element('stereonet');
+      const center = 180;
+      const radius = 145;
+      const gridColor = '#d8e3dd';
+      const colors = { slope: '#182b27', plane1: '#17614f', plane2: '#376da5', intersection: '#b14b32', daylight: '#d3b82f', friction: '#b14b32' };
+      svg.replaceChildren();
+      const defs = appendSvg(svg, 'defs');
+      const clip = appendSvg(defs, 'clipPath', { id: 'stereonet-clip' });
+      appendSvg(clip, 'circle', { cx: center, cy: center, r: radius });
+      appendSvg(svg, 'circle', { cx: center, cy: center, r: radius, fill: '#fff', stroke: '#718b7e', 'stroke-width': 1.5 });
+      const plot = appendSvg(svg, 'g', { 'clip-path': 'url(#stereonet-clip)' });
+      if (valid) {
+        appendSvg(plot, 'path', { d: daylightRegion(values['slope-direction'], values['slope-dip'], center, radius), fill: colors.daylight, 'fill-opacity': 0.24, stroke: 'none' });
+        const limitingFriction = Math.max(values.friction1, values.friction2);
+        const frictionRadius = radius * Math.tan((90 - limitingFriction) * radians / 2);
+        appendSvg(plot, 'circle', { cx: center, cy: center, r: frictionRadius, fill: colors.friction, 'fill-opacity': 0.24, stroke: colors.friction, 'stroke-width': 1, 'stroke-dasharray': '4 3' });
+      }
+      for (let trend = 0; trend < 360; trend += 30) {
+        const edge = projectLineation(trend, 0, center, radius);
+        appendSvg(plot, 'line', { x1: center, y1: center, x2: edge.x, y2: edge.y, stroke: gridColor, 'stroke-width': 0.8 });
+      }
+      [15, 30, 45, 60, 75].forEach((plunge) => {
+        const ringRadius = radius * Math.tan((90 - plunge) * radians / 2);
+        appendSvg(plot, 'circle', { cx: center, cy: center, r: ringRadius, fill: 'none', stroke: gridColor, 'stroke-width': 0.8 });
+        const ringLabel = projectLineation(225, plunge, center, radius);
+        appendSvg(plot, 'text', { x: ringLabel.x - 3, y: ringLabel.y + 3, fill: '#718b7e', 'font-size': 9, 'text-anchor': 'end' }, String(plunge) + '°');
+      });
+      if (valid) {
+        [
+          { direction: values['slope-direction'], dip: values['slope-dip'], color: colors.slope, width: 2.2, name: 'skjæringsflate' },
+          { direction: values['plane1-direction'], dip: values['plane1-dip'], color: colors.plane1, width: 1.8, name: 'sprekkplan 1' },
+          { direction: values['plane2-direction'], dip: values['plane2-dip'], color: colors.plane2, width: 1.8, name: 'sprekkplan 2' }
+        ].forEach((plane) => appendSvg(plot, 'path', { d: greatCirclePath(plane.direction, plane.dip, center, radius), fill: 'none', stroke: plane.color, 'stroke-width': plane.width, 'data-plane': plane.name }));
+        if (result && !result.parallel) {
+          const point = projectLineation(result.trend, result.plunge, center, radius);
+          appendSvg(plot, 'circle', { cx: point.x, cy: point.y, r: 5, fill: colors.intersection, stroke: '#fff', 'stroke-width': 1.5, 'data-intersection-point': 'true' });
+        }
+      }
+      appendSvg(svg, 'circle', { cx: center, cy: center, r: radius, fill: 'none', stroke: '#718b7e', 'stroke-width': 1.5 });
+      [[0, 'N'], [90, 'E'], [180, 'S'], [270, 'W']].forEach(([trend, label]) => {
+        const point = projectLineation(trend, 0, center, radius + 14);
+        appendSvg(svg, 'text', { x: point.x, y: point.y + 4, fill: '#182b27', 'font-size': 12, 'font-weight': 'bold', 'text-anchor': 'middle' }, label);
+      });
+      element('stereonet-note').textContent = !valid
+        ? 'Fyll inn gyldige verdier for alle orienteringene for å vise storsirkler og skjæringslinje.'
+        : result && result.parallel
+          ? 'Planorienteringene vises, men de danner ingen unik skjæringslinje.'
+          : 'Rød prikk viser skjæringslinjens fallretning og fall. Sirkler i nettet viser linjefall.';
+    }
     function setCheck(id, text, pass) {
       element(id).textContent = text;
       element(id).className = pass === null ? '' : pass ? 'pass' : 'fail';
@@ -186,6 +313,7 @@
       });
       const result = valid ? calculate(values) : null;
       const usable = result && !result.parallel;
+      drawStereonet(values, result, valid);
       ['line-direction', 'line-plunge', 'apparent-dip'].forEach((id) => { element(id).textContent = '\u2013'; });
       if (!usable) {
         element('verdict').textContent = valid ? 'Ingen unik skjæringslinje' : 'Legg inn planorienteringer';
@@ -193,17 +321,24 @@
         setCheck('daylight-check', valid ? 'Planene danner ikke en entydig kilelinje.' : '\u2013', valid ? false : null);
         setCheck('friction1-check', '\u2013', null);
         setCheck('friction2-check', '\u2013', null);
+        setCheck('sliding-check', '\u2013', null);
       } else {
         element('line-direction').textContent = directionFormat.format(result.trend) + '\u00b0';
         element('line-plunge').textContent = numberFormat.format(result.plunge) + '\u00b0';
         element('apparent-dip').textContent = numberFormat.format(result.apparentDip) + '\u00b0';
-        setCheck('daylight-check', result.daylights ? 'Ja. Skjæringslinjen kommer til syne i skråningsflaten.' : result.downhillOutward ? 'Nei. Linjen er brattere enn skjæringsflatens tilsynelatende fall.' : 'Nei. Linjen peker ikke nedover og ut mot skråningsflaten.', result.daylights);
+        setCheck('daylight-check', result.daylights ? 'Kinematisk mulig: orienteringene gir kilen en utgang gjennom skråningsflaten.' : 'Kinematisk ikke mulig: orienteringene gir ikke kilen en utgang gjennom skråningsflaten.', result.daylights);
         setCheck('friction1-check', result.overcomesFriction1 ? 'Ja. Linjefallet overstiger φ₁ = ' + numberFormat.format(values.friction1) + '°.' : 'Nei. Linjefallet overstiger ikke φ₁ = ' + numberFormat.format(values.friction1) + '°.', result.overcomesFriction1);
         setCheck('friction2-check', result.overcomesFriction2 ? 'Ja. Linjefallet overstiger φ₂ = ' + numberFormat.format(values.friction2) + '°.' : 'Nei. Linjefallet overstiger ikke φ₂ = ' + numberFormat.format(values.friction2) + '°.', result.overcomesFriction2);
-        const possible = result.daylights && result.overcomesFriction1 && result.overcomesFriction2;
-        element('verdict').textContent = possible ? 'Kinematisk mulig' : 'Ikke indikert';
-        const resultText = possible ? 'Utgangs- og friksjonskriteriene er oppfylt for begge plan.' : result.daylights ? 'Skjæringslinjen kommer til syne i skråningsflaten, men overstiger ikke begge friksjonsvinklene.' : 'Skjæringslinjen kommer ikke til syne i skråningsflaten.';
-        element('status').textContent = isExample ? 'Testeksempel. ' + resultText : resultText;
+        const frictionScreenPasses = result.overcomesFriction1 && result.overcomesFriction2;
+        element('verdict').textContent = result.daylights ? 'Kinematisk mulig' : 'Ikke kinematisk mulig';
+        const geometryText = result.daylights ? 'Orienteringene gir en geometrisk utgang gjennom skråningsflaten.' : 'Orienteringene gir ikke en geometrisk utgang gjennom skråningsflaten.';
+        element('status').textContent = isExample ? 'Testeksempel. ' + geometryText : geometryText;
+        const slidingText = !result.daylights
+          ? 'Ikke indikert: kilen mangler geometrisk utgang i skråningsflaten.'
+          : frictionScreenPasses
+            ? 'Indikert i enkel screening: linjefallet overstiger begge friksjonsvinklene.'
+            : 'Ikke indikert i enkel screening: linjefallet overstiger ikke begge friksjonsvinklene.';
+        setCheck('sliding-check', slidingText, result.daylights && frictionScreenPasses);
       }
       const state = { example: isExample };
       fieldNames.forEach((name) => { state[name] = element(name).value; });

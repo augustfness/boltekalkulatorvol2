@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#17614f">
+  <meta name="theme-color" content="#006879">
   <title>Boltebehov | V225 partialfaktormetoden</title>
   <style>
-    :root { --ink: #182b27; --muted: #546963; --green: #17614f; --line: #d8e3dd; --paper: #fff; --accent: #b14b32; }
+    :root { --ink: #17364a; --muted: #455f70; --green: #006879; --line: #c8dbe4; --paper: #fff; --accent: #d66b55; --page: #edf5f8; --tab: #dcebf1; --field-border: #7896a5; --surface: #f7fafc; --danger: #963b42; }
     * { box-sizing: border-box; }
-    body { margin: 0; color: var(--ink); background: #f1f5f3; font-family: 'Trebuchet MS', sans-serif; line-height: 1.5; }
+    body { margin: 0; color: var(--ink); background: var(--page); font-family: 'Trebuchet MS', sans-serif; line-height: 1.5; }
     button, input, select { font: inherit; }
     button, summary { cursor: pointer; }
     :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
@@ -16,7 +16,7 @@
     .header-inner { max-width: 1050px; margin: auto; padding: 20px 28px; display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
     .brand { font-weight: bold; color: var(--green); text-transform: uppercase; }
     main { max-width: 1050px; margin: auto; padding: 28px; }
-    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
+    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: var(--tab); border-radius: 6px; margin-bottom: 25px; }
     .method-switch a { padding: 9px 5px; min-height: 46px; display: flex; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 13px; line-height: 1.25; }
     .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
     h1 { font: normal 36px/1.15 Georgia, serif; margin: 0 0 8px; }
@@ -30,19 +30,19 @@
     .field { margin-bottom: 16px; }
     label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 7px; }
     .input-wrap { position: relative; }
-    .input-wrap input, select { width: 100%; min-height: 52px; border: 1px solid #a7bbb0; border-radius: 5px; background: white; color: var(--ink); }
+    .input-wrap input, select { width: 100%; min-height: 52px; border: 1px solid var(--field-border); border-radius: 5px; background: var(--paper); color: var(--ink); }
     .input-wrap input { padding: 11px 82px 11px 12px; font-size: 21px; font-variant-numeric: tabular-nums; }
     select { padding: 12px; font-size: 15px; }
     .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 13px; pointer-events: none; }
     input[aria-invalid="true"] { border-color: var(--accent); }
     .hint, .error { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
-    .error { color: #a43822; }
+    .error { color: var(--danger); }
     .error:empty { display: none; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .pair .input-wrap input { padding-right: 46px; }
     input[type="range"] { width: 100%; height: 32px; margin: 8px 0 0; accent-color: var(--green); }
     .scale { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
-    .computed { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-height: 52px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px; background: #f9fbfa; }
+    .computed { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-height: 52px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); }
     .computed output { font-size: 21px; font-variant-numeric: tabular-nums; }
     details { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 12px; font-size: 14px; }
     summary { min-height: 44px; color: var(--green); font-weight: bold; }
@@ -62,12 +62,12 @@
     .check strong { display: block; font-size: 14px; }
     .check p { margin: 4px 0 0; font-size: 13px; }
     .pass { color: var(--green); }
-    .fail { color: #a43822; }
+    .fail { color: var(--danger); }
     .assumption { border-left: 3px solid var(--accent); padding-left: 13px; font-size: 13px; color: var(--muted); margin-top: 18px; }
-    .sketch { display: block; width: 100%; height: 140px; background: #f9fbfa; border-top: 1px solid var(--line); }
+    .sketch { display: block; width: 100%; height: 140px; background: var(--surface); border-top: 1px solid var(--line); }
     .formula { background: white; border-left: 3px solid var(--green); padding: 14px; line-height: 1.9; overflow-wrap: anywhere; }
     .method { max-width: 780px; color: var(--muted); }
-    .example-notice { border-left: 3px solid var(--accent); padding-left: 12px; color: #a43822; font-size: 13px; }
+    .example-notice { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--danger); font-size: 13px; }
     footer { color: var(--muted); font-size: 12px; margin: 24px 0 8px; }
     [hidden] { display: none !important; }
     @media (max-width: 700px) {
@@ -117,7 +117,7 @@
         <div class="field"><label for="capacity-basis">Kapasitetsgrunnlag</label><select id="capacity-basis" aria-describedby="basis-hint"><option value="design">Dimensjonerende aksialkapasitet C_d</option><option value="characteristic">Karakteristisk aksialkapasitet C_k</option></select><p class="hint" id="basis-hint">Bolteverdiene fra din tabell er allerede dimensjonerende og skal ikke deles p&aring; en materialfaktor p&aring; nytt.</p></div>
         <div class="field"><label for="capacity">Aksialkapasitet per bolt</label><div class="input-wrap"><input id="capacity" type="text" inputmode="decimal" aria-describedby="capacity-hint capacity-error"><span class="unit">kN/bolt</span></div><p class="hint" id="capacity-hint">Kapasitet for hele sikringsmiddelet, begrenset av st&aring;l, heft og forankring. Ikke kapasitet langs planet.</p><p class="error" id="capacity-error"></p></div>
         <div class="field" id="gamma-bolt-field" hidden><label for="gamma-bolt">Materialfaktor for sikringsmiddelet &gamma;<sub>s</sub></label><div class="input-wrap"><input id="gamma-bolt" type="text" inputmode="decimal" aria-describedby="gamma-bolt-hint gamma-bolt-error"><span class="unit">faktor</span></div><p class="hint" id="gamma-bolt-hint">M&aring; fastsettes faglig. 1,25 i V225-eksempelet er ikke en generell anbefaling; 1,15 omtales for armeringsst&aring;l alene.</p><p class="error" id="gamma-bolt-error"></p></div>
-        <div class="field"><label for="alpha">Boltens vinkel &alpha; fra horisontalen</label><div class="input-wrap"><input id="alpha" type="text" inputmode="decimal" aria-describedby="alpha-hint alpha-error"><span class="unit">grader</span></div><p class="hint" id="alpha-hint">Positiv nedover inn i berget som i V225 figur 5.2.4&ndash;1. Denne modellen avgrenses til 0 &le; &alpha; + &beta; &le; 90&deg;.</p><p class="error" id="alpha-error"></p></div>
+        <div class="field"><label for="alpha">Boltens vinkel &alpha; fra horisontalen</label><div class="input-wrap"><input id="alpha" type="text" inputmode="decimal" aria-describedby="alpha-hint alpha-error"><span class="unit">grader</span></div><p class="hint" id="alpha-hint">Positiv vinkel heller nedover inn i berget; negativ vinkel heller oppover. V225 avgrenser vinkelsummen til 0&deg; &le; &alpha; + &beta; &le; 90&deg;.</p><p class="error" id="alpha-error"></p></div>
         <div class="field"><label for="installed">Antall bolter som kontrolleres</label><div class="input-wrap"><input id="installed" type="text" inputmode="numeric" value="0" aria-describedby="installed-hint installed-error"><span class="unit">stk.</span></div><p class="hint" id="installed-hint">Samme boltetype, retning og lik lastdeling.</p><p class="error" id="installed-error"></p></div>
         <details><summary>Materialfaktorer og seismikk</summary>
           <div class="pair">
@@ -192,7 +192,7 @@
     boltTypes.forEach((bolt) => element('bolt-type').add(new Option(bolt.label + ' \u2014 C_d = ' + numberFormat.format(bolt.capacity) + ' kN', bolt.id)));
     function parseNumber(text) {
       const normalized = text.trim().replace(',', '.');
-      return /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized) ? Number(normalized) : NaN;
+      return /^-?(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized) ? Number(normalized) : NaN;
     }
     function exceedsDemand(resistance, demand) {
       return resistance - demand > 1e-10 * Math.max(1, Math.abs(resistance), Math.abs(demand));
@@ -246,7 +246,7 @@
         if (name === 'beta') { acceptable = acceptable && value > 0 && value < 90; message = 'Oppgi en helning mellom 0 og 90 grader (ikke endepunktene).'; }
         if (['phi', 'residual'].includes(name)) { acceptable = acceptable && value < 90; message = 'Oppgi en vinkel fra 0 til under 90 grader.'; }
         if (name === 'residual' && Number.isFinite(values.phi)) { acceptable = acceptable && value <= values.phi; message = 'Residual vinkel m\u00e5 v\u00e6re mellom 0 og opprinnelig friksjonsvinkel.'; }
-        if (name === 'alpha') { acceptable = acceptable && value + values.beta <= 90; message = 'Oppgi en vinkel fra 0 til 90 minus glideplanets helning.'; }
+        if (name === 'alpha') { acceptable = Number.isFinite(value) && Number.isFinite(values.beta) && value + values.beta >= 0 && value + values.beta <= 90; message = 'Oppgi vinkelen slik at 0° ≤ α + β ≤ 90°. Negativ α heller oppover.'; }
         if (name === 'installed') { acceptable = acceptable && Number.isSafeInteger(value); message = 'Oppgi et helt antall bolter, minst 0.'; }
         if (name === 'saturation') { acceptable = acceptable && value <= 100; message = 'Oppgi en vannfylling mellom 0 og 100 %.'; }
         const invalid = active && !acceptable;

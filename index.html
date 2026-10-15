@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#17614f">
+  <meta name="theme-color" content="#006879">
   <title>Boltebehov | Plan utglidning</title>
   <style>
-    :root { --ink: #182b27; --muted: #546963; --green: #17614f; --line: #d8e3dd; --paper: #fff; --accent: #b14b32; }
+    :root { --ink: #17364a; --muted: #455f70; --green: #006879; --line: #c8dbe4; --paper: #fff; --accent: #d66b55; --page: #edf5f8; --tab: #dcebf1; --field-border: #7896a5; --surface: #f7fafc; --danger: #963b42; }
     * { box-sizing: border-box; }
-    body { margin: 0; color: var(--ink); background: #f1f5f3; font-family: 'Trebuchet MS', sans-serif; font-size: 16px; line-height: 1.5; }
+    body { margin: 0; color: var(--ink); background: var(--page); font-family: 'Trebuchet MS', sans-serif; font-size: 16px; line-height: 1.5; }
     button, input, select { font: inherit; }
     button { cursor: pointer; }
-    button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid #b14b32; outline-offset: 4px; }
+    button:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
     header { background: var(--paper); border-bottom: 1px solid var(--line); }
     .header-inner { max-width: 1050px; margin: auto; padding: 20px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
     .brand { font-size: 12px; font-weight: bold; color: var(--green); text-transform: uppercase; }
@@ -27,18 +27,18 @@
     h2 { font-size: 17px; margin: 0 0 18px; }
     .section-title { display: flex; justify-content: space-between; align-items: center; }
     .reset { border: 0; background: transparent; color: var(--green); text-decoration: underline; padding: 10px 0 10px 15px; font-size: 14px; min-height: 44px; }
-    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
+    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: var(--tab); border-radius: 6px; margin-bottom: 25px; }
     .method-switch a { padding: 9px 5px; min-height: 46px; display: flex; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 13px; line-height: 1.25; }
     .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
     .field { margin-bottom: 20px; }
     label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 7px; }
-    select { width: 100%; min-height: 54px; padding: 12px; border: 1px solid #a7bbb0; border-radius: 5px; background: var(--paper); color: var(--ink); }
+    select { width: 100%; min-height: 54px; padding: 12px; border: 1px solid var(--field-border); border-radius: 5px; background: var(--paper); color: var(--ink); }
     .input-wrap { position: relative; }
-    .input-wrap input { width: 100%; background: var(--paper); border: 1px solid #a7bbb0; color: var(--ink); border-radius: 5px; padding: 12px 74px 12px 14px; min-height: 54px; font-size: 22px; font-variant-numeric: tabular-nums; }
+    .input-wrap input { width: 100%; background: var(--paper); border: 1px solid var(--field-border); color: var(--ink); border-radius: 5px; padding: 12px 74px 12px 14px; min-height: 54px; font-size: 22px; font-variant-numeric: tabular-nums; }
     .input-wrap input[aria-invalid="true"] { border-color: var(--accent); }
     .unit { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 15px; }
     .hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
-    .error { color: #a43822; font-size: 13px; margin: 6px 0 0; }
+    .error { color: var(--danger); font-size: 13px; margin: 6px 0 0; }
     .error:empty { display: none; }
     input[type="range"] { width: 100%; height: 32px; margin: 9px 0 0; accent-color: var(--green); cursor: pointer; }
     .scale { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
@@ -54,7 +54,7 @@
     .metric:last-child { border-bottom: 0; }
     dt { font-size: 13px; color: var(--muted); }
     dd { margin: 0; font-size: 20px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-    .sketch { width: 100%; height: 125px; display: block; border-top: 1px solid var(--line); background: #f9fbfa; }
+    .sketch { width: 100%; height: 125px; display: block; border-top: 1px solid var(--line); background: var(--surface); }
     .assumption { margin-top: 18px; padding-left: 13px; border-left: 3px solid var(--accent); font-size: 13px; color: var(--muted); }
     .assumption strong { color: var(--ink); }
     details { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 16px; font-size: 14px; }
