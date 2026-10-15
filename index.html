@@ -27,8 +27,8 @@
     h2 { font-size: 17px; margin: 0 0 18px; }
     .section-title { display: flex; justify-content: space-between; align-items: center; }
     .reset { border: 0; background: transparent; color: var(--green); text-decoration: underline; padding: 10px 0 10px 15px; font-size: 14px; min-height: 44px; }
-    .method-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
-    .method-switch a { padding: 11px 8px; min-height: 46px; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 14px; }
+    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
+    .method-switch a { padding: 9px 5px; min-height: 46px; display: flex; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 13px; line-height: 1.25; }
     .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
     .field { margin-bottom: 20px; }
     label { display: block; font-size: 14px; font-weight: bold; margin-bottom: 7px; }
@@ -71,6 +71,7 @@
       .target { padding-left: 10px; }
       .target strong { font-size: 20px; }
       .workspace { grid-template-columns: 1fr; gap: 12px; }
+      .method-switch a { font-size: 11px; }
       .field { margin-bottom: 16px; }
       .result-main { padding: 20px 22px; }
       #bolt-count { font-size: 58px; }
@@ -83,7 +84,7 @@
 <body>
   <header><div class="header-inner"><span class="brand">Bergsikring / Feltverkt&oslash;y</span><span class="tag">Plan utglidning</span></div></header>
   <main>
-    <nav class="method-switch" aria-label="Beregningsmetode"><a href="index.html" aria-current="page">Forenklet feltoverslag</a><a href="v225.html">V225 &middot; Partialfaktorer</a></nav>
+    <nav class="method-switch" aria-label="Beregningsmetode"><a href="index.html" aria-current="page">Forenklet feltoverslag</a><a href="v225.html">V225 &middot; Partialfaktorer</a><a href="kile.html">Kileanalyse</a></nav>
     <div class="intro">
       <div><h1>Boltebehov</h1><p class="subtitle">Forenklet overslag for &eacute;n blokk</p></div>
       <div class="target"><span>M&aring;lsikkerhetsfaktor</span><output id="target-display">1,5</output></div>

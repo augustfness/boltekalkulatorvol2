@@ -16,8 +16,8 @@
     .header-inner { max-width: 1050px; margin: auto; padding: 20px 28px; display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
     .brand { font-weight: bold; color: var(--green); text-transform: uppercase; }
     main { max-width: 1050px; margin: auto; padding: 28px; }
-    .method-switch { display: grid; grid-template-columns: 1fr 1fr; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
-    .method-switch a { padding: 11px 8px; min-height: 46px; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 14px; }
+    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 25px; }
+    .method-switch a { padding: 9px 5px; min-height: 46px; display: flex; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 13px; line-height: 1.25; }
     .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
     h1 { font: normal 36px/1.15 Georgia, serif; margin: 0 0 8px; }
     .subtitle { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
@@ -75,7 +75,7 @@
       .header-inner { padding: 15px 20px; }
       h1 { font-size: 30px; }
       .workspace { grid-template-columns: 1fr; gap: 24px; }
-      .method-switch a { font-size: 13px; }
+      .method-switch a { font-size: 11px; }
       .pair { gap: 10px; }
     }
   </style>
@@ -83,7 +83,7 @@
 <body>
   <header><div class="header-inner"><span class="brand">Bergsikring / Feltverkt&oslash;y</span><span>Plan utglidning</span></div></header>
   <main>
-    <nav class="method-switch" aria-label="Beregningsmetode"><a href="index.html">Forenklet feltoverslag</a><a href="v225.html" aria-current="page">V225 &middot; Partialfaktorer</a></nav>
+    <nav class="method-switch" aria-label="Beregningsmetode"><a href="index.html">Forenklet feltoverslag</a><a href="v225.html" aria-current="page">V225 &middot; Partialfaktorer</a><a href="kile.html">Kileanalyse</a></nav>
     <h1>Partialfaktormetoden</h1>
     <p class="subtitle">Passive bolter &middot; N-V225, 30.04.2025 &middot; Ett glideplan</p>
     <div class="workspace">
