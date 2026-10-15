@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="nb">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17614f">
+  <title>Kileanalyse | Kinematisk screening</title>
+  <style>
+    :root { --ink: #182b27; --muted: #546963; --green: #17614f; --line: #d8e3dd; --paper: #fff; --accent: #b14b32; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: #f1f5f3; font-family: 'Trebuchet MS', sans-serif; line-height: 1.5; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    header { background: white; border-bottom: 1px solid var(--line); }
+    .header-inner { max-width: 1050px; margin: auto; padding: 18px 28px; display: flex; justify-content: space-between; gap: 16px; font-size: 12px; }
+    .brand { color: var(--green); font-weight: bold; text-transform: uppercase; }
+    main { max-width: 1050px; margin: auto; padding: 28px; }
+    .method-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 4px; background: #e3ebe6; border-radius: 6px; margin-bottom: 26px; }
+    .method-switch a { min-height: 46px; padding: 9px 5px; display: flex; justify-content: center; align-items: center; text-align: center; text-decoration: none; color: var(--muted); border-radius: 4px; font-size: 13px; line-height: 1.25; }
+    .method-switch a[aria-current="page"] { color: var(--green); background: white; font-weight: bold; }
+    h1 { font: normal 36px/1.15 Georgia, serif; margin: 0 0 7px; }
+    h2 { font-size: 17px; margin: 0; }
+    h3 { font-size: 15px; margin: 22px 0 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+    .subtitle { margin: 0 0 25px; color: var(--muted); font-size: 14px; }
+    .workspace { display: grid; grid-template-columns: 1fr .9fr; gap: 40px; align-items: start; }
+    form, section { min-width: 0; }
+    .section-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 17px; }
+    button { border: 0; padding: 10px 0 10px 12px; min-height: 44px; color: var(--green); background: transparent; text-decoration: underline; font-size: 13px; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { margin-bottom: 17px; }
+    label { display: block; margin-bottom: 7px; font-size: 14px; font-weight: bold; }
+    .input-wrap { position: relative; }
+    .input-wrap input { width: 100%; min-height: 52px; padding: 11px 58px 11px 12px; color: var(--ink); background: white; border: 1px solid #a7bbb0; border-radius: 5px; font-size: 20px; font-variant-numeric: tabular-nums; }
+    .input-wrap input[aria-invalid="true"] { border-color: var(--accent); }
+    .unit { position: absolute; top: 50%; right: 12px; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 13px; }
+    .hint, .error { margin: 6px 0 0; color: var(--muted); font-size: 12px; }
+    .error { color: #a43822; }
+    .error:empty { display: none; }
+    .results { overflow: hidden; background: white; border: 1px solid var(--line); border-radius: 8px; }
+    .result-main { padding: 22px; color: white; background: var(--green); }
+    .result-main h2 { font-size: 14px; font-weight: normal; }
+    #verdict { display: block; margin-top: 8px; font: normal 27px/1.2 Georgia, serif; }
+    .result-note { margin: 9px 0 0; font-size: 12px; }
+    .metrics { margin: 0; padding: 0 22px; }
+    .metric { display: flex; justify-content: space-between; align-items: baseline; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .metric:last-child { border-bottom: 0; }
+    dt { color: var(--muted); font-size: 12px; }
+    dd { margin: 0; text-align: right; font-size: 17px; font-variant-numeric: tabular-nums; }
+    .checks { padding: 0 22px 16px; }
+    .check { margin-top: 7px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .check strong { font-size: 13px; }
+    .check p { margin: 4px 0 0; font-size: 13px; }
+    .pass { color: var(--green); }
+    .fail { color: #a43822; }
+    .warning { margin: 17px 0 0; padding-left: 12px; border-left: 3px solid var(--accent); color: var(--muted); font-size: 13px; }
+    details { margin-top: 25px; padding-top: 13px; border-top: 1px solid var(--line); font-size: 14px; }
+    summary { min-height: 44px; color: var(--green); cursor: pointer; font-weight: bold; }
+    .method { max-width: 780px; color: var(--muted); }
+    .formula { padding: 13px 16px; background: white; border-left: 3px solid var(--green); line-height: 1.8; overflow-wrap: anywhere; }
+    footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 700px) {
+      main { padding: 20px; }
+      .header-inner { padding: 15px 20px; }
+      h1 { font-size: 30px; }
+      .workspace { grid-template-columns: 1fr; gap: 24px; }
+      .method-switch a { font-size: 11px; }
+      .pair { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header><div class="header-inner"><span class="brand">Bergsikring / Feltverkt&oslash;y</span><span>Kinematisk screening</span></div></header>
+  <main>
+    <nav class="method-switch" aria-label="Beregningsmetode"><a href="index.html">Forenklet feltoverslag</a><a href="v225.html">V225 &middot; Partialfaktorer</a><a href="kile.html" aria-current="page">Kileanalyse</a></nav>
+    <h1>Kileanalyse</h1>
+    <p class="subtitle">Kinematisk screening av skj&aelig;ringslinjen mellom to sprekkplan</p>
+    <div class="workspace">
+      <form id="calculator" novalidate>
+        <div class="section-title"><h2>Orienteringer</h2><div><button type="button" id="example">Testeksempel</button><button type="button" id="reset">Nullstill</button></div></div>
+        <h3>Skj&aelig;ringsflate</h3>
+        <div class="pair">
+          <div class="field"><label for="slope-direction">Fallretning</label><div class="input-wrap"><input id="slope-direction" type="text" inputmode="decimal" aria-describedby="slope-direction-hint slope-direction-error"><span class="unit">grader</span></div><p class="hint" id="slope-direction-hint">Azimut med klokken fra nord.</p><p class="error" id="slope-direction-error"></p></div>
+          <div class="field"><label for="slope-dip">Fallvinkel</label><div class="input-wrap"><input id="slope-dip" type="text" inputmode="decimal" aria-describedby="slope-dip-error"><span class="unit">grader</span></div><p class="error" id="slope-dip-error"></p></div>
+        </div>
+        <h3>Sprekkplan 1</h3>
+        <div class="pair">
+          <div class="field"><label for="plane1-direction">Fallretning</label><div class="input-wrap"><input id="plane1-direction" type="text" inputmode="decimal" aria-describedby="plane1-direction-hint plane1-direction-error"><span class="unit">grader</span></div><p class="hint" id="plane1-direction-hint">Azimut med klokken fra nord.</p><p class="error" id="plane1-direction-error"></p></div>
+          <div class="field"><label for="plane1-dip">Fallvinkel</label><div class="input-wrap"><input id="plane1-dip" type="text" inputmode="decimal" aria-describedby="plane1-dip-error"><span class="unit">grader</span></div><p class="error" id="plane1-dip-error"></p></div>
+        </div>
+        <h3>Sprekkplan 2</h3>
+        <div class="pair">
+          <div class="field"><label for="plane2-direction">Fallretning</label><div class="input-wrap"><input id="plane2-direction" type="text" inputmode="decimal" aria-describedby="plane2-direction-hint plane2-direction-error"><span class="unit">grader</span></div><p class="hint" id="plane2-direction-hint">Azimut med klokken fra nord.</p><p class="error" id="plane2-direction-error"></p></div>
+          <div class="field"><label for="plane2-dip">Fallvinkel</label><div class="input-wrap"><input id="plane2-dip" type="text" inputmode="decimal" aria-describedby="plane2-dip-error"><span class="unit">grader</span></div><p class="error" id="plane2-dip-error"></p></div>
+        </div>
+        <h3>Friksjon</h3>
+        <div class="field"><label for="friction">Friksjonsvinkel p&aring; sprekkplanene</label><div class="input-wrap"><input id="friction" type="text" inputmode="decimal" aria-describedby="friction-hint friction-error"><span class="unit">grader</span></div><p class="hint" id="friction-hint">F&oslash;rste screening antar samme friksjonsvinkel p&aring; begge plan.</p><p class="error" id="friction-error"></p></div>
+      </form>
+      <section aria-label="Kinematisk analyseresultat">
+        <div class="results" aria-live="polite" aria-atomic="true">
+          <div class="result-main"><h2>Kinematisk mulighet for utglidning</h2><output id="verdict">Legg inn planorienteringer</output><p id="status" class="result-note">Geometrien kontrolleres n&aring;r inndataene er gyldige.</p></div>
+          <dl class="metrics">
+            <div class="metric"><dt>Skj&aelig;ringslinje, fallretning</dt><dd id="line-direction">&ndash;</dd></div>
+            <div class="metric"><dt>Skj&aelig;ringslinje, fallvinkel</dt><dd id="line-plunge">&ndash;</dd></div>
+            <div class="metric"><dt>Skj&aelig;ringsflatens tilsynelatende fall</dt><dd id="apparent-dip">&ndash;</dd></div>
+          </dl>
+          <div class="checks">
+            <div class="check"><strong>1. Linjen daglyser ut gjennom skj&aelig;ringsflaten</strong><p id="daylight-check">&ndash;</p></div>
+            <div class="check"><strong>2. Linjefallet overstiger friksjonsvinkelen</strong><p id="friction-check">&ndash;</p></div>
+          </div>
+        </div>
+        <p class="warning"><strong>Screening, ikke stabilitetsberegning.</strong> «Kinematisk mulig» betyr at orienteringene tillater utglidning etter denne enkle geometriske/friksjonskontrollen. Verkt&oslash;yet beregner ikke kilevekt, vanntrykk, kohesjon, normalspenningsfordeling, boltvirkning eller sikkerhetsfaktor. Et mulig brudd betyr ikke at kilen faktisk er ustabil.</p>
+      </section>
+    </div>
+    <details><summary>Beregningsgrunnlag og begrensninger</summary><div class="method">
+      <p>Orienteringer oppgis som fallretning (azimut med klokken fra nord) og fallvinkel fra horisontalplanet. Skj&aelig;ringslinjen beregnes som kryssproduktet av planenes normalvektorer. Den nedadrettede retningen langs linjen brukes i kontrollen.</p>
+      <div class="formula">n = n<sub>1</sub> &times; n<sub>2</sub><br>Linjen daglyser dersom retningen peker mot skj&aelig;ringsflaten og linjefallet er mindre enn skj&aelig;ringsflatens tilsynelatende fall i samme retning.<br>Friksjonsscreening: linjefall &gt; valgt &phi;.</div>
+      <p>Modellen antar én sammenhengende kile avgrenset av to plan og en skj&aelig;ringsflate, samt samme friksjonsvinkel p&aring; begge plan. Den tar ikke hensyn til planenes utstrekning, sprekkavslutninger, kilevolum, kohesjon, vann, last, spenning, bolter eller andre bruddmekanismer. Orienteringsm&aring;linger og geologisk tolkning m&aring; kvalitetssikres i felt.</p>
+    </div></details>
+    <footer>Inndata lagres lokalt i denne nettleseren. Ingen data sendes til en server.</footer>
+  </main>
+  <script>
+    const element = (id) => document.getElementById(id);
+    const storageKey = 'boltebehov-kile-v1';
+    const defaults = { 'slope-direction': '', 'slope-dip': '', 'plane1-direction': '', 'plane1-dip': '', 'plane2-direction': '', 'plane2-dip': '', friction: '' };
+    const example = { 'slope-direction': '0', 'slope-dip': '60', 'plane1-direction': '315', 'plane1-dip': '45', 'plane2-direction': '45', 'plane2-dip': '45', friction: '25' };
+    const fieldNames = Object.keys(defaults);
+    const numberFormat = new Intl.NumberFormat('nb-NO', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const directionFormat = new Intl.NumberFormat('nb-NO', { maximumFractionDigits: 0 });
+    const radians = Math.PI / 180;
+    const degrees = 180 / Math.PI;
+    let isExample = false;
+    function parseNumber(text) {
+      const normalized = text.trim().replace(',', '.');
+      return /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(normalized) ? Number(normalized) : NaN;
+    }
+    function planeNormal(direction, dip) {
+      const bearing = direction * radians;
+      const angle = dip * radians;
+      return { x: Math.sin(angle) * Math.sin(bearing), y: Math.sin(angle) * Math.cos(bearing), z: Math.cos(angle) };
+    }
+    function cross(left, right) {
+      return { x: left.y * right.z - left.z * right.y, y: left.z * right.x - left.x * right.z, z: left.x * right.y - left.y * right.x };
+    }
+    function calculate(values) {
+      const direction = cross(planeNormal(values['plane1-direction'], values['plane1-dip']), planeNormal(values['plane2-direction'], values['plane2-dip']));
+      const length = Math.hypot(direction.x, direction.y, direction.z);
+      if (length < 1e-8) return { parallel: true };
+      let line = { x: direction.x / length, y: direction.y / length, z: direction.z / length };
+      if (line.z > 1e-10) line = { x: -line.x, y: -line.y, z: -line.z };
+      const horizontalLength = Math.hypot(line.x, line.y);
+      const plunge = Math.atan2(-line.z, horizontalLength) * degrees;
+      const trend = (Math.atan2(line.x, line.y) * degrees + 360) % 360;
+      const slopeBearing = values['slope-direction'] * radians;
+      const outwardComponent = line.x * Math.sin(slopeBearing) + line.y * Math.cos(slopeBearing);
+      const apparentDip = outwardComponent > 0
+        ? Math.atan(Math.tan(values['slope-dip'] * radians) * Math.min(1, outwardComponent / horizontalLength)) * degrees
+        : 0;
+      const downhillOutward = line.z < -1e-10 && outwardComponent > 1e-10;
+      const daylights = downhillOutward && plunge < apparentDip - 1e-8;
+      const overcomesFriction = plunge > values.friction + 1e-8;
+      return { trend, plunge, apparentDip, downhillOutward, daylights, overcomesFriction };
+    }
+    function setCheck(id, text, pass) {
+      element(id).textContent = text;
+      element(id).className = pass === null ? '' : pass ? 'pass' : 'fail';
+    }
+    function update() {
+      const values = {};
+      let valid = true;
+      fieldNames.forEach((name) => { values[name] = parseNumber(element(name).value); });
+      fieldNames.forEach((name) => {
+        const value = values[name];
+        const directionField = name.endsWith('direction');
+        const frictionField = name === 'friction';
+        const validValue = Number.isFinite(value) && (directionField ? value >= 0 && value <= 360 : frictionField ? value >= 0 && value < 90 : value > 0 && value < 90);
+        element(name).setAttribute('aria-invalid', String(!validValue));
+        element(name + '-error').textContent = validValue ? '' : directionField ? 'Oppgi en fallretning fra 0 til 360 grader.' : frictionField ? 'Oppgi en friksjonsvinkel fra 0 til under 90 grader.' : 'Oppgi en fallvinkel større enn 0 og mindre enn 90 grader.';
+        if (!validValue) valid = false;
+      });
+      const result = valid ? calculate(values) : null;
+      const usable = result && !result.parallel;
+      ['line-direction', 'line-plunge', 'apparent-dip'].forEach((id) => { element(id).textContent = '\u2013'; });
+      if (!usable) {
+        element('verdict').textContent = valid ? 'Ingen unik skjæringslinje' : 'Legg inn planorienteringer';
+        element('status').textContent = valid ? 'Planene er parallelle eller nesten parallelle.' : 'Kontroller feltene for å beregne.';
+        setCheck('daylight-check', valid ? 'Planene danner ikke en entydig kilelinje.' : '\u2013', valid ? false : null);
+        setCheck('friction-check', '\u2013', null);
+      } else {
+        element('line-direction').textContent = directionFormat.format(result.trend) + '\u00b0';
+        element('line-plunge').textContent = numberFormat.format(result.plunge) + '\u00b0';
+        element('apparent-dip').textContent = numberFormat.format(result.apparentDip) + '\u00b0';
+        setCheck('daylight-check', result.daylights ? 'Ja. Linjen faller ut gjennom skjæringsflaten.' : result.downhillOutward ? 'Nei. Linjen er brattere enn skjæringsflatens tilsynelatende fall.' : 'Nei. Linjen faller ikke nedover og ut mot skjæringsflaten.', result.daylights);
+        setCheck('friction-check', result.overcomesFriction ? 'Ja. Linjefallet overstiger valgt friksjonsvinkel.' : 'Nei. Linjefallet overstiger ikke valgt friksjonsvinkel.', result.overcomesFriction);
+        const possible = result.daylights && result.overcomesFriction;
+        element('verdict').textContent = possible ? 'Kinematisk mulig' : 'Ikke indikert';
+        const resultText = possible ? 'Begge screeningkriteriene er oppfylt.' : result.daylights ? 'Kilen daglyser, men friksjonskriteriet er ikke oppfylt.' : 'Kilen daglyser ikke gjennom skjæringsflaten.';
+        element('status').textContent = isExample ? 'Testeksempel. ' + resultText : resultText;
+      }
+      const state = { example: isExample };
+      fieldNames.forEach((name) => { state[name] = element(name).value; });
+      try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch {}
+    }
+    function restore(state) {
+      fieldNames.forEach((name) => { element(name).value = typeof state[name] === 'string' ? state[name] : defaults[name]; });
+      isExample = state.example === true;
+      element('status').textContent = isExample ? 'Testeksempel er lastet inn. Ikke bruk som prosjektdata.' : 'Geometrien kontrolleres når inndataene er gyldige.';
+      update();
+    }
+    fieldNames.forEach((name) => element(name).addEventListener('input', () => { isExample = false; update(); }));
+    element('example').addEventListener('click', () => restore({ ...example, example: true }));
+    element('reset').addEventListener('click', () => restore(defaults));
+    let initial = defaults;
+    try {
+      const stored = JSON.parse(localStorage.getItem(storageKey));
+      if (stored && typeof stored === 'object' && !Array.isArray(stored)) initial = { ...defaults, ...stored };
+    } catch {}
+    restore(initial);
+  </script>
+</body>
+</html>
